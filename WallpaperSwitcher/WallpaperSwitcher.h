@@ -7,6 +7,8 @@
 //
 
 #import <PreferencePanes/PreferencePanes.h>
+#import <AppSettings.h>
+#import <NHLogger.h>
 
 @interface WallpaperSwitcher : NSPreferencePane
 

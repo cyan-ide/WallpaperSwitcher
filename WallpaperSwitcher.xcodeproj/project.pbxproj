@@ -7,19 +7,55 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		6602AC91222E8D3800B9400E /* icon_v1.png in Resources */ = {isa = PBXBuildFile; fileRef = 6602AC8F222E8D3800B9400E /* icon_v1.png */; };
 		66A38620222E825600E4B3C3 /* WallpaperSwitcher.h in Headers */ = {isa = PBXBuildFile; fileRef = 66A3861F222E825600E4B3C3 /* WallpaperSwitcher.h */; };
 		66A38622222E825600E4B3C3 /* WallpaperSwitcher.m in Sources */ = {isa = PBXBuildFile; fileRef = 66A38621222E825600E4B3C3 /* WallpaperSwitcher.m */; };
 		66A38624222E825600E4B3C3 /* WallpaperSwitcher.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 66A38623222E825600E4B3C3 /* WallpaperSwitcher.tiff */; };
 		66A38627222E825600E4B3C3 /* WallpaperSwitcher.xib in Resources */ = {isa = PBXBuildFile; fileRef = 66A38625222E825600E4B3C3 /* WallpaperSwitcher.xib */; };
+		66A38662222E84D900E4B3C3 /* wswitcherd in Copy wswitcher to bundle */ = {isa = PBXBuildFile; fileRef = 66A38661222E84C400E4B3C3 /* wswitcherd */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		66A38667222E854A00E4B3C3 /* AppSettings.h in Headers */ = {isa = PBXBuildFile; fileRef = 66A38665222E854A00E4B3C3 /* AppSettings.h */; };
+		66A38668222E854A00E4B3C3 /* AppSettings.m in Sources */ = {isa = PBXBuildFile; fileRef = 66A38666222E854A00E4B3C3 /* AppSettings.m */; };
+		66A3866B222E856200E4B3C3 /* NHLogger.h in Headers */ = {isa = PBXBuildFile; fileRef = 66A38669222E856200E4B3C3 /* NHLogger.h */; };
+		66A3866C222E856200E4B3C3 /* NHLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = 66A3866A222E856200E4B3C3 /* NHLogger.m */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		66A38660222E84C400E4B3C3 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 66A3865C222E84C400E4B3C3 /* wswitcherd.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 66A38652222E84C400E4B3C3;
+			remoteInfo = wswitcherd;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		66A38647222E839D00E4B3C3 /* Copy wswitcher to bundle */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 12;
+			files = (
+				66A38662222E84D900E4B3C3 /* wswitcherd in Copy wswitcher to bundle */,
+			);
+			name = "Copy wswitcher to bundle";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
+		6602AC8F222E8D3800B9400E /* icon_v1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon_v1.png; sourceTree = "<group>"; };
 		66A3861C222E825600E4B3C3 /* WallpaperSwitcher.prefPane */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = WallpaperSwitcher.prefPane; sourceTree = BUILT_PRODUCTS_DIR; };
 		66A3861F222E825600E4B3C3 /* WallpaperSwitcher.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WallpaperSwitcher.h; sourceTree = "<group>"; };
 		66A38621222E825600E4B3C3 /* WallpaperSwitcher.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WallpaperSwitcher.m; sourceTree = "<group>"; };
 		66A38623222E825600E4B3C3 /* WallpaperSwitcher.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = WallpaperSwitcher.tiff; sourceTree = "<group>"; };
 		66A38626222E825600E4B3C3 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/WallpaperSwitcher.xib; sourceTree = "<group>"; };
 		66A38628222E825600E4B3C3 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		66A3865C222E84C400E4B3C3 /* wswitcherd.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = wswitcherd.xcodeproj; path = wswitcherd/wswitcherd.xcodeproj; sourceTree = "<group>"; };
+		66A38665222E854A00E4B3C3 /* AppSettings.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppSettings.h; sourceTree = "<group>"; };
+		66A38666222E854A00E4B3C3 /* AppSettings.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppSettings.m; sourceTree = "<group>"; };
+		66A38669222E856200E4B3C3 /* NHLogger.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NHLogger.h; sourceTree = "<group>"; };
+		66A3866A222E856200E4B3C3 /* NHLogger.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NHLogger.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -36,6 +72,7 @@
 		66A38612222E825600E4B3C3 = {
 			isa = PBXGroup;
 			children = (
+				66A3865C222E84C400E4B3C3 /* wswitcherd.xcodeproj */,
 				66A3861E222E825600E4B3C3 /* WallpaperSwitcher */,
 				66A3861D222E825600E4B3C3 /* Products */,
 			);
@@ -52,13 +89,26 @@
 		66A3861E222E825600E4B3C3 /* WallpaperSwitcher */ = {
 			isa = PBXGroup;
 			children = (
+				6602AC8F222E8D3800B9400E /* icon_v1.png */,
 				66A3861F222E825600E4B3C3 /* WallpaperSwitcher.h */,
 				66A38621222E825600E4B3C3 /* WallpaperSwitcher.m */,
 				66A38623222E825600E4B3C3 /* WallpaperSwitcher.tiff */,
 				66A38625222E825600E4B3C3 /* WallpaperSwitcher.xib */,
 				66A38628222E825600E4B3C3 /* Info.plist */,
+				66A38665222E854A00E4B3C3 /* AppSettings.h */,
+				66A38666222E854A00E4B3C3 /* AppSettings.m */,
+				66A38669222E856200E4B3C3 /* NHLogger.h */,
+				66A3866A222E856200E4B3C3 /* NHLogger.m */,
 			);
 			path = WallpaperSwitcher;
+			sourceTree = "<group>";
+		};
+		66A3865D222E84C400E4B3C3 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				66A38661222E84C400E4B3C3 /* wswitcherd */,
+			);
+			name = Products;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -69,6 +119,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				66A38620222E825600E4B3C3 /* WallpaperSwitcher.h in Headers */,
+				66A3866B222E856200E4B3C3 /* NHLogger.h in Headers */,
+				66A38667222E854A00E4B3C3 /* AppSettings.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -83,6 +135,7 @@
 				66A38618222E825600E4B3C3 /* Sources */,
 				66A38619222E825600E4B3C3 /* Frameworks */,
 				66A3861A222E825600E4B3C3 /* Resources */,
+				66A38647222E839D00E4B3C3 /* Copy wswitcher to bundle */,
 			);
 			buildRules = (
 			);
@@ -118,6 +171,12 @@
 			mainGroup = 66A38612222E825600E4B3C3;
 			productRefGroup = 66A3861D222E825600E4B3C3 /* Products */;
 			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = 66A3865D222E84C400E4B3C3 /* Products */;
+					ProjectRef = 66A3865C222E84C400E4B3C3 /* wswitcherd.xcodeproj */;
+				},
+			);
 			projectRoot = "";
 			targets = (
 				66A3861B222E825600E4B3C3 /* WallpaperSwitcher */,
@@ -125,12 +184,23 @@
 		};
 /* End PBXProject section */
 
+/* Begin PBXReferenceProxy section */
+		66A38661222E84C400E4B3C3 /* wswitcherd */ = {
+			isa = PBXReferenceProxy;
+			fileType = "compiled.mach-o.executable";
+			path = wswitcherd;
+			remoteRef = 66A38660222E84C400E4B3C3 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
+
 /* Begin PBXResourcesBuildPhase section */
 		66A3861A222E825600E4B3C3 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 				66A38624222E825600E4B3C3 /* WallpaperSwitcher.tiff in Resources */,
+				6602AC91222E8D3800B9400E /* icon_v1.png in Resources */,
 				66A38627222E825600E4B3C3 /* WallpaperSwitcher.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -142,7 +212,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				66A38668222E854A00E4B3C3 /* AppSettings.m in Sources */,
 				66A38622222E825600E4B3C3 /* WallpaperSwitcher.m in Sources */,
+				66A3866C222E856200E4B3C3 /* NHLogger.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

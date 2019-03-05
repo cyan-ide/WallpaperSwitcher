@@ -23,9 +23,10 @@
 	<key>NSMainNibFile</key>
 	<string>WallpaperSwitcher</string>
 	<key>NSPrefPaneIconFile</key>
-	<string>WallpaperSwitcher.tiff</string>
+	<string>icon_v1.png</string>
 	<key>NSPrefPaneIconLabel</key>
-	<string>WallpaperSwitcher</string>
+	<string>Wallpaper 
+Switcher</string>
 	<key>NSPrincipalClass</key>
 	<string>WallpaperSwitcher</string>
 </dict>
