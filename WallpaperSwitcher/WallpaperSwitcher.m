@@ -23,6 +23,16 @@ static NSString *kEnabled = @"Enabled";
 
 @implementation WallpaperSwitcher
 
+
+- (void) modifyLaunchAgentPlist() {
+    
+    //1. check if launch agent file is present, if not copy
+    //1.1. update launch agent fields from defaults to system specific
+    //wswitcherd path, log directories
+    //2. modify startup interval bast on the app settings
+    //3. update file permissions / ownershop for Launch Agent plist (744 / user ownership)
+}
+
 - (void)mainViewDidLoad
 {
     //init default settings
@@ -32,6 +42,7 @@ static NSString *kEnabled = @"Enabled";
     [defaults setValue:@"" forKey:kWallpaperSourceCustomURL];
     [defaults setValue:@"/r/wallpapers" forKey:kWallpaperSourceCustomSubreddit];
     
+    //TODO: set to /Users/<curr user>/Pictures/WallpaperSwitcher/
     [defaults setValue:@"/Users/adam/Pictures/wallpapers" forKey:kDownloadsDirectory];
     
     [defaults setValue:[NSNumber numberWithBool:YES] forKey:kRetryWhenNetworkDown];

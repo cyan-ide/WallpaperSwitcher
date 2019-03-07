@@ -33,6 +33,7 @@ int main(int argc, const char * argv[]) {
         [defaults setValue:@"" forKey:kWallpaperSourceCustomURL];
         [defaults setValue:@"/r/wallpapers" forKey:kWallpaperSourceCustomSubreddit];
         
+        //TODO: set to /Users/<curr user>/Pictures/WallpaperSwitcher/
         [defaults setValue:@"/Users/adam/Pictures/wallpapers" forKey:kDownloadsDirectory];
         
         [defaults setValue:[NSNumber numberWithBool:YES] forKey:kRetryWhenNetworkDown];
