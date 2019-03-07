@@ -55,7 +55,7 @@ int main(int argc, const char * argv[]) {
         BOOL retryWhenNetworkDown = [applicationSettings getSettingsBoolPropertyForKey: kRetryWhenNetworkDown];
         NSNumber *retryInterval = [applicationSettings getSettingsNumberPropertyForKey: kRetryInterval];
         NSNumber *retryCount = [applicationSettings getSettingsNumberPropertyForKey: kRetryCount];
-        
+        /*
         NHLog(@"wallpaperSource: %@",wallpaperSource);
         NHLog(@"downloadInterval: %@",downloadInterval);
         NHLog(@"wallpaperSourceCustomURL: %@",wallpaperSourceCustomURL);
@@ -65,11 +65,13 @@ int main(int argc, const char * argv[]) {
         NHLog(@"retryWhenNetworkDown: %d",retryWhenNetworkDown);
         NHLog(@"retryInterval: %d",[retryInterval integerValue]);
         NHLog(@"retryCount: %d",[retryCount integerValue]);
-        
+        */
         NSString *imageURL;
         NSString *imageFilename;
         
-        wallpaperSource = @"Reddit";
+        //wallpaperSource = @"Reddit";
+        //wallpaperSourceCustomSubreddit = @"/r/wallpapers";
+        //wallpaperSourceCustomURL = @"https://i.redd.it/kydhs421glk21.jpg";
         if ([wallpaperSource isEqualToString:@"National Geographic"])
          {
              //national geographic
@@ -121,20 +123,42 @@ int main(int argc, const char * argv[]) {
             //Parse JSON to extract image URL
             NSDictionary *redditData = [json valueForKey:@"data"];
             NSArray *postsData = [redditData valueForKey:@"children"];
+            NSMutableDictionary *postScoring = [[NSMutableDictionary alloc] init];
             for (NSDictionary *post in postsData) {
                 NSString *postUrl = [[post valueForKey:@"data"] valueForKey:@"url"];
-                //NSNumber *score = [[post valueForKey:@"data"] valueForKey:@"ups"]; //add parsing here
-                NHLog(@"post url : %@",postUrl);
-                
+                NSNumber *score = [[post valueForKey:@"data"] valueForKey:@"ups"]; //add parsing here
+                //exclude posts that are not links for images
+                if ([postUrl hasSuffix:@".jpg"] || [postUrl hasSuffix:@".png"] || [postUrl hasSuffix:@".gif"])
+                    [postScoring setValue:score forKey:postUrl];
             }
-            //imageURL = [images objectForKey:@"url"];
-            //imageURL = [@"http://www.bing.com" stringByAppendingString:imageURL];
-            return 1;
+            //sort by scoring
+            NSArray *orderedKeys = [postScoring keysSortedByValueUsingComparator:^NSComparisonResult(id obj1, id obj2){
+                return [obj2 compare:obj1];
+            }];
+            //take first post with most ratings
+            if ([orderedKeys count] > 0)
+            {
+                //set url
+                imageURL = orderedKeys[0];
+                //parse url to extract image filename
+                NSString *pattern = @"([^\\/]+)$"; //get string after the last back-slash
+                NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:pattern options:0 error:NULL];
             
+                NSTextCheckingResult *match = [regex firstMatchInString:imageURL options:0 range:NSMakeRange(0, [imageURL length])];
+                if (match != nil)
+                    imageFilename = [imageURL substringWithRange:[match rangeAtIndex:1]];
+                else
+                    imageFilename = @"subreddit.png";
+            }
+            else {
+                NSLog(@"Error looking for image data in Subreddit. Couldn't find any URLs linking to images.");
+                return 1;
+            }
         } else if ([wallpaperSource isEqualToString:@"Other ..."])
         {
             //others
-            //TODO
+            imageURL = wallpaperSourceCustomURL;
+            imageFilename = @"custom_image.jpg";
             
         } else
         {
@@ -170,21 +194,22 @@ int main(int argc, const char * argv[]) {
             NSTextCheckingResult *match = [regex firstMatchInString:imageURL options:0 range:NSMakeRange(0, [imageURL length])];
             if (match != nil)
                 imageFilename = [imageURL substringWithRange:[match rangeAtIndex:1]];
+            else
+                imageFilename = @"bing_daily.png";
         }
         
         //download image as indicated in source
-        //imageURL = @"http://www.bing.com/az/hprichbg/rb/MardiGrasIndians_EN-US7436694464_1920x108066.jpg";
-        NHLog(@"imageURL: %@",imageURL);
+        //NHLog(@"imageURL: %@",imageURL);
         NSURL  *url = [NSURL URLWithString:imageURL];
         NSData *urlData = [NSData dataWithContentsOfURL:url];
         int retryCounter = 0;
-        while (urlData == NULL && retryCounter < [retryCount intValue])
+        while (urlData == NULL && (retryWhenNetworkDown == TRUE) && retryCounter < [retryCount intValue])
         {
             urlData = [NSData dataWithContentsOfURL:url];
             retryCounter++;
             [NSThread sleepForTimeInterval: [retryInterval intValue]];
         }
-        NHLog(@"done with attempts: %d",retryCounter);
+        //NHLog(@"done with attempts: %d",retryCounter);
         //   NHLog(@"error downloading image!");
         //while ()
         if ( urlData )
@@ -206,7 +231,7 @@ int main(int argc, const char * argv[]) {
             //write current file (as indicated by file title)
             NSString  *filePath = [downloadsDirectory stringByAppendingString:@"/"];
             filePath = [filePath stringByAppendingString:imageFilename];
-            NHLog(@"filepath: %@",filePath);
+            //NHLog(@"filepath: %@",filePath);
             [urlData writeToFile:filePath atomically:YES];
             //change wallpaper
             NSURL *fileURL = [[NSURL alloc] initFileURLWithPath:filePath];
