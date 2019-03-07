@@ -28,8 +28,8 @@
 
 
 - (IBAction)enableButtonPressAction:(id)sender;
-- (IBAction)downloadIWallpaperIntervalChange:(id)sender;
 - (IBAction)downloadSourceChange:(id)sender;
+- (IBAction)downloadWallpaperIntervalChange:(id)sender;
 
 - (IBAction)retryCheckboxButtonActionPress:(id)sender;
 - (IBAction)deleteDirPressAction:(id)sender;
@@ -39,6 +39,11 @@
 
 
 - (IBAction)updateButtonPressAction:(id)sender;
+
+- (IBAction)retryTimesTextFieldChange:(id)sender;
+- (IBAction)retryIntervalTextFieldChange:(id)sender;
+- (IBAction)customURLTextFieldChange:(id)sender;
+- (IBAction)downloadsDirectoryTextFieldChange:(id)sender;
 
 
 @end

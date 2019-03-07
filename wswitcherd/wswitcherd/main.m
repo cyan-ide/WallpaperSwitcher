@@ -24,6 +24,9 @@ static NSString *kRetryCount = @"RetryCount";
 
 static NSString *kEnabled = @"Enabled";
 
+static NSString *kSaveLogs = @"SaveLogs";
+static NSString *kDeleteOldWallpapers = @"DeleteOldWallpapers";
+
 int main(int argc, const char * argv[]) {
     @autoreleasepool {
         //init default settings
@@ -42,6 +45,8 @@ int main(int argc, const char * argv[]) {
         
         [defaults setValue:[NSNumber numberWithBool:NO] forKey:kEnabled];
         
+        [defaults setValue:[NSNumber numberWithBool:NO] forKey:kDeleteOldWallpapers];
+        
         AppSettings *applicationSettings = [[AppSettings alloc] init];
         [applicationSettings setDefaults: defaults];
         
@@ -56,6 +61,8 @@ int main(int argc, const char * argv[]) {
         BOOL retryWhenNetworkDown = [applicationSettings getSettingsBoolPropertyForKey: kRetryWhenNetworkDown];
         NSNumber *retryInterval = [applicationSettings getSettingsNumberPropertyForKey: kRetryInterval];
         NSNumber *retryCount = [applicationSettings getSettingsNumberPropertyForKey: kRetryCount];
+        
+        BOOL deleteOldWallpapers = [applicationSettings getSettingsBoolPropertyForKey: kDeleteOldWallpapers];
         /*
         NHLog(@"wallpaperSource: %@",wallpaperSource);
         NHLog(@"downloadInterval: %@",downloadInterval);
@@ -216,17 +223,20 @@ int main(int argc, const char * argv[]) {
         if ( urlData )
         {
             //delete past files (exclude subdirectories, delete only images)
-            NSFileManager *fileMgr = [NSFileManager defaultManager];
-            NSArray *fileArray = [fileMgr contentsOfDirectoryAtPath:downloadsDirectory error:nil];
-            for (NSString *filename in fileArray)  {
-                BOOL isDir = NO;
-                NSString * fullPath= [downloadsDirectory stringByAppendingPathComponent:filename];
-                if([[NSFileManager defaultManager] fileExistsAtPath:fullPath isDirectory:&isDir] && isDir)
-                    continue;
-                
-                if ([filename hasSuffix:@".jpg"] || [filename hasSuffix:@".png"] || [filename hasSuffix:@".gif"])
-                {
-                    [fileMgr removeItemAtPath:[downloadsDirectory stringByAppendingPathComponent:filename] error:NULL];
+            if (deleteOldWallpapers == YES)
+            {
+                NSFileManager *fileMgr = [NSFileManager defaultManager];
+                NSArray *fileArray = [fileMgr contentsOfDirectoryAtPath:downloadsDirectory error:nil];
+                for (NSString *filename in fileArray)  {
+                    BOOL isDir = NO;
+                    NSString * fullPath= [downloadsDirectory stringByAppendingPathComponent:filename];
+                    if([[NSFileManager defaultManager] fileExistsAtPath:fullPath isDirectory:&isDir] && isDir)
+                        continue;
+                    
+                    if ([filename hasSuffix:@".jpg"] || [filename hasSuffix:@".png"] || [filename hasSuffix:@".gif"])
+                    {
+                        [fileMgr removeItemAtPath:[downloadsDirectory stringByAppendingPathComponent:filename] error:NULL];
+                    }
                 }
             }
             //write current file (as indicated by file title)

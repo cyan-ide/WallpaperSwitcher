@@ -97,7 +97,7 @@
                             </menu>
                         </popUpButtonCell>
                         <connections>
-                            <action selector="downloadIWallpaperntervalChange:" target="-2" id="WWY-Zl-3y6"/>
+                            <action selector="downloadWallpaperIntervalChange:" target="-2" id="5AK-sa-xem"/>
                         </connections>
                     </popUpButton>
                     <popUpButton verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="B9z-zF-GHU">
@@ -149,6 +149,9 @@
                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                             <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                         </textFieldCell>
+                        <connections>
+                            <action selector="retryTimesTextFieldChange:" target="-2" id="lDT-NI-4Vy"/>
+                        </connections>
                     </textField>
                     <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Dcl-z7-RRk">
                         <rect key="frame" x="18" y="166" width="114" height="17"/>
@@ -185,6 +188,9 @@
                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                             <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                         </textFieldCell>
+                        <connections>
+                            <action selector="customURLTextFieldChange:" target="-2" id="NMS-OW-e9K"/>
+                        </connections>
                     </textField>
                     <textField verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="lq4-H7-0jS">
                         <rect key="frame" x="464" y="176" width="42" height="22"/>
@@ -194,6 +200,9 @@
                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                             <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                         </textFieldCell>
+                        <connections>
+                            <action selector="retryIntervalTextFieldChange:" target="-2" id="JHG-OZ-AYK"/>
+                        </connections>
                     </textField>
                     <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Yrs-yJ-Xfb">
                         <rect key="frame" x="521" y="181" width="56" height="17"/>
@@ -225,6 +234,9 @@
                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                             <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                         </textFieldCell>
+                        <connections>
+                            <action selector="downloadsDirectoryTextFieldChange:" target="-2" id="W9E-ky-XxD"/>
+                        </connections>
                     </textField>
                     <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="zxj-8u-4ib">
                         <rect key="frame" x="458" y="101" width="94" height="32"/>
