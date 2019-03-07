@@ -7,7 +7,16 @@
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="NSPreferencePane">
             <connections>
+                <outlet property="CustomURLInputField" destination="Wu1-Qv-JmO" id="PNH-5Y-TjE"/>
                 <outlet property="_window" destination="F0z-JX-Cv5" id="gIp-Ho-8D9"/>
+                <outlet property="deleteDirCheckboxButton" destination="Irk-Hx-DGM" id="2Ck-na-7mA"/>
+                <outlet property="downloadIWallpaperIntervalButton" destination="G7d-O1-BJ9" id="Q5u-YA-kyV"/>
+                <outlet property="downloadSourceButton" destination="B9z-zF-GHU" id="cnD-r5-4HR"/>
+                <outlet property="downloadsDirectoryInpytField" destination="7fg-SR-nGb" id="S5D-3r-Lsw"/>
+                <outlet property="retryCheckboxButton" destination="mNV-j1-fBM" id="VeJ-M4-Imt"/>
+                <outlet property="retrySecondsInputField" destination="lq4-H7-0jS" id="ria-EG-LbG"/>
+                <outlet property="retryTimesInputBox" destination="Mqo-Bb-Lmy" id="bIA-OJ-wjB"/>
+                <outlet property="writeLogsCheckboxButton" destination="ljv-XP-EKc" id="aBJ-57-YQc"/>
             </connections>
         </customObject>
         <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
@@ -28,6 +37,9 @@
                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                             <font key="font" metaFont="system"/>
                         </buttonCell>
+                        <connections>
+                            <action selector="enableButtonPressAction:" target="-2" id="jdZ-jk-C0N"/>
+                        </connections>
                     </button>
                     <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="y7S-jk-vPj">
                         <rect key="frame" x="101" y="295" width="265" height="17"/>
@@ -84,9 +96,12 @@
                                 </items>
                             </menu>
                         </popUpButtonCell>
+                        <connections>
+                            <action selector="downloadIWallpaperntervalChange:" target="-2" id="WWY-Zl-3y6"/>
+                        </connections>
                     </popUpButton>
                     <popUpButton verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="B9z-zF-GHU">
-                        <rect key="frame" x="195" y="198" width="172" height="25"/>
+                        <rect key="frame" x="195" y="201" width="172" height="25"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <popUpButtonCell key="cell" type="push" title="Bing Daily Image" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="ZOr-4t-bGH" id="pyj-uK-Ah6">
                             <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
@@ -102,6 +117,9 @@
                                 </items>
                             </menu>
                         </popUpButtonCell>
+                        <connections>
+                            <action selector="downloadSourceChange:" target="-2" id="Tc9-qU-cPU"/>
+                        </connections>
                     </popUpButton>
                     <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="mNV-j1-fBM">
                         <rect key="frame" x="415" y="241" width="225" height="18"/>
@@ -110,6 +128,9 @@
                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                             <font key="font" metaFont="system"/>
                         </buttonCell>
+                        <connections>
+                            <action selector="retryCheckbkxActionPress:" target="-2" id="x3k-8q-dW5"/>
+                        </connections>
                     </button>
                     <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="i3t-h0-DLR">
                         <rect key="frame" x="417" y="210" width="33" height="17"/>
@@ -212,6 +233,9 @@
                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                             <font key="font" metaFont="system"/>
                         </buttonCell>
+                        <connections>
+                            <action selector="selectDownloadsDirButtonPressAction:" target="-2" id="gI1-4w-6Mc"/>
+                        </connections>
                     </button>
                     <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="yHG-5X-FlB">
                         <rect key="frame" x="560" y="101" width="90" height="32"/>
@@ -220,6 +244,9 @@
                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                             <font key="font" metaFont="system"/>
                         </buttonCell>
+                        <connections>
+                            <action selector="viewDownloadDirButtonPress:" target="-2" id="k2t-1N-AFB"/>
+                        </connections>
                     </button>
                     <box verticalHuggingPriority="750" fixedFrame="YES" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="bl3-LX-pGI">
                         <rect key="frame" x="12" y="90" width="640" height="5"/>
@@ -250,6 +277,9 @@
                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                             <font key="font" metaFont="system"/>
                         </buttonCell>
+                        <connections>
+                            <action selector="updateButtonPressAction:" target="-2" id="Ppc-bq-icg"/>
+                        </connections>
                     </button>
                     <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Irk-Hx-DGM">
                         <rect key="frame" x="18" y="60" width="365" height="18"/>
@@ -258,6 +288,9 @@
                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                             <font key="font" metaFont="system"/>
                         </buttonCell>
+                        <connections>
+                            <action selector="deleteDirPressAction:" target="-2" id="dLq-B8-dt7"/>
+                        </connections>
                     </button>
                     <box verticalHuggingPriority="750" fixedFrame="YES" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="7XU-Sv-TrB">
                         <rect key="frame" x="12" y="43" width="640" height="5"/>
@@ -270,6 +303,9 @@
                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                             <font key="font" metaFont="system"/>
                         </buttonCell>
+                        <connections>
+                            <action selector="writeLogsButtonPressAction:" target="-2" id="OQv-l5-ieX"/>
+                        </connections>
                     </button>
                 </subviews>
             </view>

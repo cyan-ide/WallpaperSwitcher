@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		6602AC91222E8D3800B9400E /* icon_v1.png in Resources */ = {isa = PBXBuildFile; fileRef = 6602AC8F222E8D3800B9400E /* icon_v1.png */; };
+		6602AC962231268700B9400E /* com.wswitcher.agent.plist in Resources */ = {isa = PBXBuildFile; fileRef = 6602AC952231268700B9400E /* com.wswitcher.agent.plist */; };
 		66A38620222E825600E4B3C3 /* WallpaperSwitcher.h in Headers */ = {isa = PBXBuildFile; fileRef = 66A3861F222E825600E4B3C3 /* WallpaperSwitcher.h */; };
 		66A38622222E825600E4B3C3 /* WallpaperSwitcher.m in Sources */ = {isa = PBXBuildFile; fileRef = 66A38621222E825600E4B3C3 /* WallpaperSwitcher.m */; };
 		66A38624222E825600E4B3C3 /* WallpaperSwitcher.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 66A38623222E825600E4B3C3 /* WallpaperSwitcher.tiff */; };
@@ -45,6 +46,7 @@
 
 /* Begin PBXFileReference section */
 		6602AC8F222E8D3800B9400E /* icon_v1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon_v1.png; sourceTree = "<group>"; };
+		6602AC952231268700B9400E /* com.wswitcher.agent.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = com.wswitcher.agent.plist; sourceTree = "<group>"; };
 		66A3861C222E825600E4B3C3 /* WallpaperSwitcher.prefPane */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = WallpaperSwitcher.prefPane; sourceTree = BUILT_PRODUCTS_DIR; };
 		66A3861F222E825600E4B3C3 /* WallpaperSwitcher.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WallpaperSwitcher.h; sourceTree = "<group>"; };
 		66A38621222E825600E4B3C3 /* WallpaperSwitcher.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WallpaperSwitcher.m; sourceTree = "<group>"; };
@@ -89,6 +91,7 @@
 		66A3861E222E825600E4B3C3 /* WallpaperSwitcher */ = {
 			isa = PBXGroup;
 			children = (
+				6602AC952231268700B9400E /* com.wswitcher.agent.plist */,
 				6602AC8F222E8D3800B9400E /* icon_v1.png */,
 				66A3861F222E825600E4B3C3 /* WallpaperSwitcher.h */,
 				66A38621222E825600E4B3C3 /* WallpaperSwitcher.m */,
@@ -200,6 +203,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				66A38624222E825600E4B3C3 /* WallpaperSwitcher.tiff in Resources */,
+				6602AC962231268700B9400E /* com.wswitcher.agent.plist in Resources */,
 				6602AC91222E8D3800B9400E /* icon_v1.png in Resources */,
 				66A38627222E825600E4B3C3 /* WallpaperSwitcher.xib in Resources */,
 			);

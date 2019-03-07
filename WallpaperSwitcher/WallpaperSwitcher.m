@@ -23,13 +23,88 @@ static NSString *kEnabled = @"Enabled";
 
 @implementation WallpaperSwitcher
 
+NSString *currentWallpaperSource;
+NSString *currentDownloadInterval;
+NSString *currentWallpaperSourceCustomURL;
+NSString *currentWallpaperSourceCustomSubreddit;
 
-- (void) modifyLaunchAgentPlist() {
+NSString *currentDownloadsDirectory;
+
+BOOL currentRetryWhenNetworkDown;
+NSNumber *currentRetryInterval;
+NSNumber *currentRetryCount;
+
+BOOL currentEnabled;
+
+
+- (void) modifyLaunchAgentPlist {
     
     //1. check if launch agent file is present, if not copy
-    //1.1. update launch agent fields from defaults to system specific
+
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    NSError *error;
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES);
+    NSString *libraryDirectory = [paths objectAtIndex:0];
+    
+    NSString *launchAgentsFileDirectoryPath = [libraryDirectory stringByAppendingPathComponent:@"LaunchAgents/com.wswitcher.agent.plist"];
+    NSString *launchAgentsBundleFilePath = [[self bundle] pathForResource:@"com.wswitcher.agent" ofType:@"plist"];
+    NHFileLog(@"/Users/adam/wswitcher.log",@"modify Plist!");
+    NHFileLog(@"/Users/adam/wswitcher.log",@"dest path: %@",launchAgentsFileDirectoryPath);
+    NHFileLog(@"/Users/adam/wswitcher.log",@"src path: %@",launchAgentsBundleFilePath);
+    if ([fileManager fileExistsAtPath:launchAgentsFileDirectoryPath] == NO)
+    {
+        [fileManager copyItemAtPath:launchAgentsBundleFilePath toPath:launchAgentsFileDirectoryPath error:&error];
+        if (error) {
+            NSLog(@"Error on copying launch agent config file: %@\nfrom path: %@\ntoPath: %@", error, launchAgentsBundleFilePath, launchAgentsFileDirectoryPath);
+        }
+        //1.1. update launch agent fields from defaults to system specific
+        NSMutableDictionary* launchAgentFileContents = [NSMutableDictionary dictionaryWithContentsOfFile:launchAgentsFileDirectoryPath];
+        NSString *launchAgentsBundleFilePath = [[[self bundle] sharedSupportPath] stringByAppendingPathComponent:@"wswitcherd"];
+        [launchAgentFileContents setValue:launchAgentsBundleFilePath forKey:@"Program"];
+        [launchAgentFileContents setValue:[libraryDirectory stringByAppendingPathComponent:@"Logs/wswitcher/wswitcher.stderr.log"] forKey:@"StandardErrorPath"];
+        [launchAgentFileContents setValue:[libraryDirectory stringByAppendingPathComponent:@"Logs/wswitcher/wswitcher.stdout.log"] forKey:@"StandardOutPath"];
+    }
+    
     //wswitcherd path, log directories
     //2. modify startup interval bast on the app settings
+    NSMutableDictionary* launchAgentFileContents = [NSMutableDictionary dictionaryWithContentsOfFile:launchAgentsFileDirectoryPath];
+    if ([currentDownloadInterval isEqualToString:@"every 6 hours"]) {
+        NSMutableArray *calendarInterval=[[NSMutableArray alloc] init];
+        NSMutableDictionary *interval=[[NSMutableDictionary alloc] init];
+        [interval setValue:@"3" forKey:@"Hour"];
+        [interval setValue:@"0" forKey:@"Minute"];
+        [calendarInterval addObject:interval];
+        
+        interval=[[NSMutableDictionary alloc] init];
+        [interval setValue:@"9" forKey:@"Hour"];
+        [interval setValue:@"0" forKey:@"Minute"];
+        [calendarInterval addObject:interval];
+        
+        interval=[[NSMutableDictionary alloc] init];
+        [interval setValue:@"15" forKey:@"Hour"];
+        [interval setValue:@"0" forKey:@"Minute"];
+        [calendarInterval addObject:interval];
+        
+        interval=[[NSMutableDictionary alloc] init];
+        [interval setValue:@"21" forKey:@"Hour"];
+        [interval setValue:@"0" forKey:@"Minute"];
+        [calendarInterval addObject:interval];
+        
+        [launchAgentFileContents setValue:calendarInterval forKey:@"StartCalendarInterval"];
+    }
+    else if ([currentDownloadInterval isEqualToString:@"every 12 hours"]) {
+    }
+    else if ([currentDownloadInterval isEqualToString:@"every day"]) {
+    }
+    else if ([currentDownloadInterval isEqualToString:@"twice a week"]) {
+    }
+    else if ([currentDownloadInterval isEqualToString:@"weekly"]) {
+    }
+    
+    
+    
+    
+    
     //3. update file permissions / ownershop for Launch Agent plist (744 / user ownership)
 }
 
@@ -78,7 +153,51 @@ static NSString *kEnabled = @"Enabled";
 //    //setSettingsStringProperty
     
     //AppQuitGracefullyKey;
+    //set current values
+    currentWallpaperSource = [applicationSettings getSettingsStringPropertyForKey:kWallpaperSource];
+    currentDownloadInterval = [applicationSettings getSettingsStringPropertyForKey:kDownloadInterval];
+    currentWallpaperSourceCustomURL = [applicationSettings getSettingsStringPropertyForKey:kWallpaperSourceCustomURL];
+    currentWallpaperSourceCustomSubreddit = [applicationSettings getSettingsStringPropertyForKey:kWallpaperSourceCustomSubreddit];
     
+    currentDownloadsDirectory = [applicationSettings getSettingsStringPropertyForKey:kDownloadsDirectory];
+    
+    currentRetryWhenNetworkDown = [applicationSettings getSettingsBoolPropertyForKey:kRetryWhenNetworkDown];
+    currentRetryInterval = [applicationSettings getSettingsNumberPropertyForKey:kRetryInterval];
+    currentRetryCount = [applicationSettings getSettingsNumberPropertyForKey:kRetryCount];
+    
+    currentEnabled = [applicationSettings getSettingsBoolPropertyForKey:kEnabled];
+    
+}
+
+- (IBAction)enableButtonPressAction:(id)sender {
+}
+
+- (IBAction)downloadIWallpaperIntervalChange:(id)sender {
+}
+
+- (IBAction)downloadSourceChange:(id)sender {
+}
+
+- (IBAction)retryDownloadCheckChange:(id)sender {
+}
+
+- (IBAction)retryCheckboxButtonActionPress:(id)sender {
+}
+
+- (IBAction)deleteDirPressAction:(id)sender {
+}
+
+- (IBAction)writeLogsButtonPressAction:(id)sender {
+}
+
+- (IBAction)selectDownloadsDirButtonPressAction:(id)sender {
+}
+
+- (IBAction)viewDownloadDirButtonPress:(id)sender {
+}
+
+- (IBAction)updateButtonPressAction:(id)sender {
+    [self modifyLaunchAgentPlist];
 }
 
 @end

@@ -13,5 +13,32 @@
 @interface WallpaperSwitcher : NSPreferencePane
 
 - (void)mainViewDidLoad;
+- (void)modifyLaunchAgentPlist;
+
+@property (weak) IBOutlet NSPopUpButton *downloadIWallpaperIntervalButton;
+@property (weak) IBOutlet NSPopUpButton *downloadSourceButton;
+@property (weak) IBOutlet NSButton *retryCheckboxButton;
+@property (weak) IBOutlet NSTextField *retryTimesInputBox;
+@property (weak) IBOutlet NSTextField *retrySecondsInputField;
+@property (weak) IBOutlet NSTextField *CustomURLInputField;
+@property (weak) IBOutlet NSTextField *downloadsDirectoryInpytField;
+@property (weak) IBOutlet NSButton *deleteDirCheckboxButton;
+@property (weak) IBOutlet NSButton *writeLogsCheckboxButton;
+
+
+
+- (IBAction)enableButtonPressAction:(id)sender;
+- (IBAction)downloadIWallpaperIntervalChange:(id)sender;
+- (IBAction)downloadSourceChange:(id)sender;
+
+- (IBAction)retryCheckboxButtonActionPress:(id)sender;
+- (IBAction)deleteDirPressAction:(id)sender;
+- (IBAction)writeLogsButtonPressAction:(id)sender;
+- (IBAction)selectDownloadsDirButtonPressAction:(id)sender;
+- (IBAction)viewDownloadDirButtonPress:(id)sender;
+
+
+- (IBAction)updateButtonPressAction:(id)sender;
+
 
 @end
