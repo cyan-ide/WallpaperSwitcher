@@ -46,7 +46,6 @@ AppSettings *applicationSettings;
 
 
 - (void) modifyLaunchAgentPlist {
-    
     //1. check if launch agent file is present, if not copy
 
     NSFileManager *fileManager = [NSFileManager defaultManager];
@@ -79,23 +78,23 @@ AppSettings *applicationSettings;
     if ([currentDownloadInterval isEqualToString:@"every 6 hours"]) {
         NSMutableArray *calendarInterval=[[NSMutableArray alloc] init];
         NSMutableDictionary *interval=[[NSMutableDictionary alloc] init];
-        [interval setValue:@"3" forKey:@"Hour"];
-        [interval setValue:@"0" forKey:@"Minute"];
+        [interval setValue:@3 forKey:@"Hour"];
+        [interval setValue:@0 forKey:@"Minute"];
         [calendarInterval addObject:interval];
         
         interval=[[NSMutableDictionary alloc] init];
-        [interval setValue:@"9" forKey:@"Hour"];
-        [interval setValue:@"0" forKey:@"Minute"];
+        [interval setValue:@9 forKey:@"Hour"];
+        [interval setValue:@0 forKey:@"Minute"];
         [calendarInterval addObject:interval];
         
         interval=[[NSMutableDictionary alloc] init];
-        [interval setValue:@"15" forKey:@"Hour"];
-        [interval setValue:@"0" forKey:@"Minute"];
+        [interval setValue:@15 forKey:@"Hour"];
+        [interval setValue:@0 forKey:@"Minute"];
         [calendarInterval addObject:interval];
         
         interval=[[NSMutableDictionary alloc] init];
-        [interval setValue:@"21" forKey:@"Hour"];
-        [interval setValue:@"0" forKey:@"Minute"];
+        [interval setValue:@21 forKey:@"Hour"];
+        [interval setValue:@0 forKey:@"Minute"];
         [calendarInterval addObject:interval];
         
         [launchAgentFileContents setValue:calendarInterval forKey:@"StartCalendarInterval"];
@@ -103,13 +102,13 @@ AppSettings *applicationSettings;
     else if ([currentDownloadInterval isEqualToString:@"every 12 hours"]) {
         NSMutableArray *calendarInterval=[[NSMutableArray alloc] init];
         NSMutableDictionary *interval=[[NSMutableDictionary alloc] init];
-        [interval setValue:@"6" forKey:@"Hour"];
-        [interval setValue:@"0" forKey:@"Minute"];
+        [interval setValue:@6 forKey:@"Hour"];
+        [interval setValue:@0 forKey:@"Minute"];
         [calendarInterval addObject:interval];
         
         interval=[[NSMutableDictionary alloc] init];
-        [interval setValue:@"18" forKey:@"Hour"];
-        [interval setValue:@"0" forKey:@"Minute"];
+        [interval setValue:@18 forKey:@"Hour"];
+        [interval setValue:@0 forKey:@"Minute"];
         [calendarInterval addObject:interval];
         
         [launchAgentFileContents setValue:calendarInterval forKey:@"StartCalendarInterval"];
@@ -117,8 +116,8 @@ AppSettings *applicationSettings;
     else if ([currentDownloadInterval isEqualToString:@"every day"]) {
         NSMutableArray *calendarInterval=[[NSMutableArray alloc] init];
         NSMutableDictionary *interval=[[NSMutableDictionary alloc] init];
-        [interval setValue:@"6" forKey:@"Hour"];
-        [interval setValue:@"0" forKey:@"Minute"];
+        [interval setValue:@6 forKey:@"Hour"];
+        [interval setValue:@0 forKey:@"Minute"];
         [calendarInterval addObject:interval];
         
         [launchAgentFileContents setValue:calendarInterval forKey:@"StartCalendarInterval"];
@@ -126,15 +125,15 @@ AppSettings *applicationSettings;
     else if ([currentDownloadInterval isEqualToString:@"twice a week"]) {
         NSMutableArray *calendarInterval=[[NSMutableArray alloc] init];
         NSMutableDictionary *interval=[[NSMutableDictionary alloc] init];
-        [interval setValue:@"6" forKey:@"Hour"];
-        [interval setValue:@"0" forKey:@"Minute"];
-        [interval setValue:@"2" forKey:@"Weekday"];
+        [interval setValue:@6 forKey:@"Hour"];
+        [interval setValue:@0 forKey:@"Minute"];
+        [interval setValue:@2 forKey:@"Weekday"];
         [calendarInterval addObject:interval];
         
         interval=[[NSMutableDictionary alloc] init];
-        [interval setValue:@"6" forKey:@"Hour"];
-        [interval setValue:@"0" forKey:@"Minute"];
-        [interval setValue:@"6" forKey:@"Weekday"];
+        [interval setValue:@6 forKey:@"Hour"];
+        [interval setValue:@0 forKey:@"Minute"];
+        [interval setValue:@6 forKey:@"Weekday"];
         [calendarInterval addObject:interval];
         
         [launchAgentFileContents setValue:calendarInterval forKey:@"StartCalendarInterval"];
@@ -142,9 +141,9 @@ AppSettings *applicationSettings;
     else if ([currentDownloadInterval isEqualToString:@"weekly"]) {
         NSMutableArray *calendarInterval=[[NSMutableArray alloc] init];
         NSMutableDictionary *interval=[[NSMutableDictionary alloc] init];
-        [interval setValue:@"6" forKey:@"Hour"];
-        [interval setValue:@"0" forKey:@"Minute"];
-        [interval setValue:@"2" forKey:@"Weekday"];
+        [interval setValue:@6 forKey:@"Hour"];
+        [interval setValue:@0 forKey:@"Minute"];
+        [interval setValue:@2 forKey:@"Weekday"];
         [calendarInterval addObject:interval];
         
         [launchAgentFileContents setValue:calendarInterval forKey:@"StartCalendarInterval"];
@@ -201,6 +200,10 @@ AppSettings *applicationSettings;
 
 - (void)mainViewDidLoad
 {
+    //get path for default downloads directory
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSPicturesDirectory, NSUserDomainMask, YES);
+    NSString *picturesDirectory = [paths objectAtIndex:0];
+    NSString *wallpaperDefaultDirectory = [picturesDirectory stringByAppendingPathComponent:@"WallpaperSwitcher"];
     //init default settings
     NSMutableDictionary *defaults=[[NSMutableDictionary alloc] init];
     [defaults setValue:@"Bing Daily Image" forKey:kWallpaperSource];
@@ -208,8 +211,7 @@ AppSettings *applicationSettings;
     [defaults setValue:@"" forKey:kWallpaperSourceCustomURL];
     [defaults setValue:@"/r/wallpapers" forKey:kWallpaperSourceCustomSubreddit];
     
-    //TODO: set to /Users/<curr user>/Pictures/WallpaperSwitcher/
-    [defaults setValue:@"/Users/adam/Pictures/wallpapers" forKey:kDownloadsDirectory];
+    [defaults setValue:wallpaperDefaultDirectory forKey:kDownloadsDirectory];
     
     [defaults setValue:[NSNumber numberWithBool:YES] forKey:kRetryWhenNetworkDown];
     [defaults setValue:[NSNumber numberWithInt:30] forKey:kRetryInterval];
@@ -220,33 +222,9 @@ AppSettings *applicationSettings;
     
     [defaults setValue:[NSNumber numberWithBool:NO] forKey:kEnabled];
     
-    NHLog(@"test: %@",@"zzz");
     applicationSettings = [[AppSettings alloc] init];
     [applicationSettings setDefaults: defaults];
-//    NSString * dupa = [applicationSettings getSettingsStringPropertyForKey:@"ddd"];
-//    NSString * dupa2 = [applicationSettings getSettingsStringPropertyForKey:kWallpaperSource];
-//    NSNumber *dupa3 = [applicationSettings getSettingsNumberPropertyForKey:kRetryInterval];
-//    NSNumber *dupa4 = [applicationSettings getSettingsNumberPropertyForKey:@"costam"];
-//    BOOL dupa5 = [applicationSettings getSettingsBoolPropertyForKey:@"costam"];
-//    BOOL dupa6 = [applicationSettings getSettingsBoolPropertyForKey:kRetryWhenNetworkDown];
-//
-//    NHFileLog(@"/Users/adam/wswitcher.log",@"test2: %@",@"zzz");
-//    NHFileLog(@"/Users/adam/wswitcher.log",@"costam: %@",dupa);
-//    NHFileLog(@"/Users/adam/wswitcher.log",@"costam2: %@",dupa2);
-//    if (dupa3 !=NULL)
-//        NHFileLog(@"/Users/adam/wswitcher.log",@"costam23: %d",[dupa3 integerValue]);
-//
-//    NHFileLog(@"/Users/adam/wswitcher.log",@"costam5: %d",dupa5);
-//    NHFileLog(@"/Users/adam/wswitcher.log",@"costam6: %d",dupa6);
-//    //settings tests
-//    [applicationSettings setSettingsStringProperty:NULL forKey:@"costamPropName"];
-//    [applicationSettings setSettingsStringProperty:NULL forKey:@"jezyNaWiezy"];
-//    [applicationSettings setSettingsStringProperty:NULL forKey:@"whatsTheNymber"];
-//    //[applicationSettings setSettingsBoolProperty:YES forKey:@"jezyNaWiezy"];
-//    //[applicationSettings setSettingsNumericProperty:[NSNumber numberWithInteger:666] forKey:@"whatsTheNymber"];
-//    //setSettingsStringProperty
     
-    //AppQuitGracefullyKey;
     //set current values
     currentWallpaperSource = [applicationSettings getSettingsStringPropertyForKey:kWallpaperSource];
     currentDownloadInterval = [applicationSettings getSettingsStringPropertyForKey:kDownloadInterval];
@@ -270,17 +248,20 @@ AppSettings *applicationSettings;
     if ([currentWallpaperSource isEqualToString:@"Reddit"])
     {
         [_CustomURLInputField setStringValue: currentWallpaperSourceCustomSubreddit];
-        [_CustomURLInputField setEditable:YES];
+        [_CustomURLInputField setEnabled:YES];
+        [_customURLLabel setStringValue:@"Custom Subreddit"];
     }
     else if ([currentWallpaperSource isEqualToString:@"Other ..."])
     {
         [_CustomURLInputField setStringValue: currentWallpaperSourceCustomURL];
-        [_CustomURLInputField setEditable:YES];
+        [_CustomURLInputField setEnabled:YES];
+        [_customURLLabel setStringValue:@"Custom URL"];
     }
     else
     {
         [_CustomURLInputField setStringValue: @""];
-        [_CustomURLInputField setEditable:NO];
+        [_CustomURLInputField setEnabled:NO];
+        [_customURLLabel setStringValue:@"Custom URL"];
     }
     
     [_downloadsDirectoryInpytField setStringValue: currentDownloadsDirectory];
@@ -304,9 +285,9 @@ AppSettings *applicationSettings;
         [_deleteDirCheckboxButton setState:NSControlStateValueOff];
     
     if (currentEnabled == NO)
-        [_enableButton setTitle:@"Disable"];
-    else
         [_enableButton setTitle:@"Enable"];
+    else
+        [_enableButton setTitle:@"Disable"];
 }
 
 - (IBAction)enableButtonPressAction:(id)sender {
@@ -348,24 +329,27 @@ AppSettings *applicationSettings;
 
 - (IBAction)downloadSourceChange:(id)sender {
     NSString *uiValue = [_downloadSourceButton titleOfSelectedItem];
-    if ( ~[uiValue isEqualToString:currentWallpaperSource] ){
+    if ( ![uiValue isEqualToString:currentWallpaperSource] ){
         currentWallpaperSource = uiValue;
         [applicationSettings setSettingsStringProperty:currentWallpaperSource forKey:kWallpaperSource];
         
         if ([currentWallpaperSource isEqualToString:@"Reddit"])
         {
             [_CustomURLInputField setStringValue: currentWallpaperSourceCustomSubreddit];
-            [_CustomURLInputField setEditable:YES];
+            [_CustomURLInputField setEnabled:YES];
+            [_customURLLabel setStringValue:@"Custom Subreddit"];
         }
         else if ([currentWallpaperSource isEqualToString:@"Other ..."])
         {
             [_CustomURLInputField setStringValue: currentWallpaperSourceCustomURL];
-            [_CustomURLInputField setEditable:YES];
+            [_CustomURLInputField setEnabled:YES];
+            [_customURLLabel setStringValue:@"Custom URL"];
         }
         else
         {
             [_CustomURLInputField setStringValue: @""];
-            [_CustomURLInputField setEditable:NO];
+            [_CustomURLInputField setEnabled:NO];
+            [_customURLLabel setStringValue:@"Custom URL"];
         }
         
         //invoke update wallpaper after source change (if wallpaper switcher is enabled)
@@ -374,6 +358,7 @@ AppSettings *applicationSettings;
             NSString *wswitcherdFilePath = [[[self bundle] sharedSupportPath] stringByAppendingPathComponent:@"wswitcherd"];
             
             NSTask *task = [[NSTask alloc] init];
+            [task setArguments:@[ @"filelog" ]];
             [task setLaunchPath:wswitcherdFilePath];
             [task launch];
         }
@@ -382,7 +367,7 @@ AppSettings *applicationSettings;
 
 - (IBAction)downloadWallpaperIntervalChange:(id)sender {
     NSString *uiValue = [_downloadIWallpaperIntervalButton titleOfSelectedItem];
-    if ( ~[uiValue isEqualToString:currentDownloadInterval] ){
+    if ( ![uiValue isEqualToString:currentDownloadInterval] ){
         currentDownloadInterval = uiValue;
         [applicationSettings setSettingsStringProperty:currentDownloadInterval forKey:kDownloadInterval];
         [self modifyLaunchAgentPlistAndReloadService];
@@ -408,8 +393,40 @@ AppSettings *applicationSettings;
     
     if (uiState != deleteOldWallpapers)
     {
-        deleteOldWallpapers = uiState;
-        [applicationSettings setSettingsBoolProperty:uiState forKey:kDeleteOldWallpapers];
+        //display warning dialog if delete files is enabled
+        BOOL userSecurityCheck = YES;
+        if (uiState == YES) //if state is being changed to delete, double check with user
+        {
+            //check if directory exists
+            BOOL isDir = NO;
+            NSFileManager *fileMgr = [NSFileManager defaultManager];
+            if([fileMgr fileExistsAtPath:currentDownloadsDirectory isDirectory:&isDir])
+            {
+                NSArray *fileArray = [fileMgr contentsOfDirectoryAtPath:currentDownloadsDirectory error:nil];
+                if ([fileArray count] > 0) //if non empty, ask user if he's sure
+                {
+                    userSecurityCheck = NO;
+                    NSAlert *alert = [[NSAlert alloc] init];
+                    [alert setMessageText:@"Directory not empty"];
+                    [alert setInformativeText:@"Your downloads directopry may contains files that will be deleted when cleaning up before wallpaper download! Are you sure?"];
+                    [alert addButtonWithTitle:@"Cancel"];
+                    [alert setIcon: [NSImage imageNamed:NSImageNameCaution] ];
+                    [alert addButtonWithTitle:@"Ok"];
+                    if ([alert runModal] == NSAlertSecondButtonReturn) //user pressed ok
+                        userSecurityCheck = YES;
+                }
+            }
+        }
+        
+        if (userSecurityCheck == YES)
+        {
+            deleteOldWallpapers = uiState;
+            [applicationSettings setSettingsBoolProperty:uiState forKey:kDeleteOldWallpapers];
+        } else
+        { //if didnt pass security check disable delete
+            [_deleteDirCheckboxButton setState:NSControlStateValueOff];
+            deleteOldWallpapers = NO;
+        }
     }
 }
 
@@ -433,7 +450,7 @@ AppSettings *applicationSettings;
     [op runModal];
     //currentDownloadsDirectory = [[op.URLs firstObject] absoluteString];
     NSString *uiValue = [[op.URLs firstObject] path];
-    if ( ~[uiValue isEqualToString:currentDownloadsDirectory] ){
+    if ( ![uiValue isEqualToString:currentDownloadsDirectory] ){
         currentDownloadsDirectory = uiValue;
         [_downloadsDirectoryInpytField setStringValue: currentDownloadsDirectory];
         [applicationSettings setSettingsStringProperty:currentDownloadsDirectory forKey:kDownloadsDirectory];
@@ -449,6 +466,7 @@ AppSettings *applicationSettings;
     NSString *wswitcherdFilePath = [[[self bundle] sharedSupportPath] stringByAppendingPathComponent:@"wswitcherd"];
     
     NSTask *task = [[NSTask alloc] init];
+    [task setArguments:@[ @"filelog" ]];
     [task setLaunchPath:wswitcherdFilePath];
     [task launch];
 }
@@ -476,16 +494,29 @@ AppSettings *applicationSettings;
 }
 
 - (IBAction)customURLTextFieldChange:(id)sender {
+    BOOL urlValueChanged = NO;
     NSString *uiValue = [_CustomURLInputField stringValue];
-    if ( [currentWallpaperSource isEqualToString:@"Reddit"] && ~[uiValue isEqualToString:currentWallpaperSourceCustomSubreddit] )
+    if ( [currentWallpaperSource isEqualToString:@"Reddit"] && ![uiValue isEqualToString:currentWallpaperSourceCustomSubreddit] )
     {
         currentWallpaperSourceCustomSubreddit = uiValue;
         [applicationSettings setSettingsStringProperty:currentWallpaperSourceCustomSubreddit forKey: kWallpaperSourceCustomSubreddit];
+        urlValueChanged = YES;
     }
-    else if ([currentWallpaperSource isEqualToString:@"Other ..."] && ~[uiValue isEqualToString:currentWallpaperSourceCustomURL])
+    else if ([currentWallpaperSource isEqualToString:@"Other ..."] && ![uiValue isEqualToString:currentWallpaperSourceCustomURL])
     {
         currentWallpaperSourceCustomURL = uiValue;
         [applicationSettings setSettingsStringProperty:currentWallpaperSourceCustomURL forKey: kWallpaperSourceCustomURL];
+        urlValueChanged = YES;
+    }
+    
+    if (urlValueChanged && currentEnabled == YES) {
+        //invoke update wallpaper after source change (if wallpaper switcher is enabled)
+        NSString *wswitcherdFilePath = [[[self bundle] sharedSupportPath] stringByAppendingPathComponent:@"wswitcherd"];
+        
+        NSTask *task = [[NSTask alloc] init];
+        [task setArguments:@[ @"filelog" ]];
+        [task setLaunchPath:wswitcherdFilePath];
+        [task launch];
     }
 }
 
@@ -521,13 +552,13 @@ AppSettings *applicationSettings;
         {
             currentDownloadsDirectory = uiValue;
             [applicationSettings setSettingsStringProperty:currentDownloadsDirectory forKey:kDownloadsDirectory];
-            
             //invoke update wallpaper after source change (if wallpaper switcher is enabled)
             if (currentEnabled == YES)
             {
                 NSString *wswitcherdFilePath = [[[self bundle] sharedSupportPath] stringByAppendingPathComponent:@"wswitcherd"];
              
                 NSTask *task = [[NSTask alloc] init];
+                [task setArguments:@[ @"filelog" ]];
                 [task setLaunchPath:wswitcherdFilePath];
                 [task launch];
             }

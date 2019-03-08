@@ -9,6 +9,7 @@
             <connections>
                 <outlet property="CustomURLInputField" destination="Wu1-Qv-JmO" id="PNH-5Y-TjE"/>
                 <outlet property="_window" destination="F0z-JX-Cv5" id="gIp-Ho-8D9"/>
+                <outlet property="customURLLabel" destination="Dcl-z7-RRk" id="zjW-dG-ZJt"/>
                 <outlet property="deleteDirCheckboxButton" destination="Irk-Hx-DGM" id="2Ck-na-7mA"/>
                 <outlet property="downloadIWallpaperIntervalButton" destination="G7d-O1-BJ9" id="Q5u-YA-kyV"/>
                 <outlet property="downloadSourceButton" destination="B9z-zF-GHU" id="cnD-r5-4HR"/>

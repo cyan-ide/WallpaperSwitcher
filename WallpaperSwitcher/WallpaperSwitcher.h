@@ -25,6 +25,7 @@
 @property (weak) IBOutlet NSButton *deleteDirCheckboxButton;
 @property (weak) IBOutlet NSButton *writeLogsCheckboxButton;
 @property (weak) IBOutlet NSButton *enableButton;
+@property (weak) IBOutlet NSTextField *customURLLabel;
 
 
 

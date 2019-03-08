@@ -27,9 +27,23 @@ static NSString *kEnabled = @"Enabled";
 static NSString *kSaveLogs = @"SaveLogs";
 static NSString *kDeleteOldWallpapers = @"DeleteOldWallpapers";
 
+NSString *logFileName = @"";
+NSString *errorLogFileName = @"";
+
 int main(int argc, const char * argv[]) {
     @autoreleasepool {
-        NHFileLog(@"/Users/adam/wswitcher.log",@"wswitcherd v1.0");
+        NSArray *arguments = [[NSProcessInfo processInfo] arguments]; //cmd line arguments
+        if ( [arguments count] >=2 && ([arguments containsObject:@"filelog"]))
+        {
+            NSArray *paths = NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES);
+            NSString *libraryDirectory = [paths objectAtIndex:0];
+            errorLogFileName = [libraryDirectory stringByAppendingPathComponent:@"Logs/wswitcher/wswitcher.stderr.log"];
+            logFileName = [libraryDirectory stringByAppendingPathComponent:@"Logs/wswitcher/wswitcher.stdout.log"];
+        }
+        //get path for default downloads directory
+        NSArray *paths = NSSearchPathForDirectoriesInDomains(NSPicturesDirectory, NSUserDomainMask, YES);
+        NSString *picturesDirectory = [paths objectAtIndex:0];
+        NSString *wallpaperDefaultDirectory = [picturesDirectory stringByAppendingPathComponent:@"WallpaperSwitcher"];
         //init default settings
         NSMutableDictionary *defaults=[[NSMutableDictionary alloc] init];
         [defaults setValue:@"Bing Daily Image" forKey:kWallpaperSource];
@@ -37,8 +51,7 @@ int main(int argc, const char * argv[]) {
         [defaults setValue:@"" forKey:kWallpaperSourceCustomURL];
         [defaults setValue:@"/r/wallpapers" forKey:kWallpaperSourceCustomSubreddit];
         
-        //TODO: set to /Users/<curr user>/Pictures/WallpaperSwitcher/
-        [defaults setValue:@"/Users/adam/Pictures/wallpapers" forKey:kDownloadsDirectory];
+        [defaults setValue:wallpaperDefaultDirectory forKey:kDownloadsDirectory];
         
         [defaults setValue:[NSNumber numberWithBool:YES] forKey:kRetryWhenNetworkDown];
         [defaults setValue:[NSNumber numberWithInt:30] forKey:kRetryInterval];
@@ -92,7 +105,7 @@ int main(int argc, const char * argv[]) {
              //redownload here ? if null ?
              if (data == NULL || error != NULL)
              {
-                 NSLog(@"Error: could not download National Geo webpage to fetch image URL");
+                 NHErrFileLog(errorLogFileName,@"Error: could not download National Geo webpage to fetch image URL");
                  return 1;
              }
              
@@ -119,13 +132,13 @@ int main(int argc, const char * argv[]) {
             //redownload here ? if null ?
             if (data == NULL || error != NULL)
             {
-                NSLog(@"Error: could not download Reddit JSON with posts list.");
+                NHErrFileLog(errorLogFileName,@"Error: could not download Reddit JSON with posts list.");
                 return 1;
             }
             NSMutableArray *json = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&error];
             if (json == NULL || error != NULL)
             {
-                NSLog(@"Error parsing Reddit JSON: empty or melformed data.");
+                NHErrFileLog(errorLogFileName,@"Error parsing Reddit JSON: empty or melformed data.");
                 return 1;
             }
             //NSLog(@"json: %@", json);
@@ -160,7 +173,7 @@ int main(int argc, const char * argv[]) {
                     imageFilename = @"subreddit.png";
             }
             else {
-                NSLog(@"Error looking for image data in Subreddit. Couldn't find any URLs linking to images.");
+                NHErrFileLog(errorLogFileName,@"Error looking for image data in Subreddit. Couldn't find any URLs linking to images.");
                 return 1;
             }
         } else if ([wallpaperSource isEqualToString:@"Other ..."])
@@ -180,13 +193,13 @@ int main(int argc, const char * argv[]) {
             //redownload here ? if null ?
             if (data == NULL || error != NULL)
             {
-                NSLog(@"Error: could not download Bing JSON with Daily Image URL.");
+                NHErrFileLog(errorLogFileName,@"Error: could not download Bing JSON with Daily Image URL.");
                 return 1;
             }
             NSMutableArray *json = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&error];
             if (json == NULL || error != NULL)
             {
-                NSLog(@"Error parsing Bing JSON: empty or melformed data.");
+                NHErrFileLog(errorLogFileName,@"Error parsing Bing JSON: empty or melformed data.");
                 return 1;
             }
             //NSLog(@"json: %@", json);
@@ -244,12 +257,20 @@ int main(int argc, const char * argv[]) {
             NSString  *filePath = [downloadsDirectory stringByAppendingString:@"/"];
             filePath = [filePath stringByAppendingString:imageFilename];
             //NHLog(@"filepath: %@",filePath);
-            [urlData writeToFile:filePath atomically:YES];
-            //change wallpaper
-            NSURL *fileURL = [[NSURL alloc] initFileURLWithPath:filePath];
-            NSError *error;
-            NSDictionary *options = [NSDictionary dictionaryWithObjectsAndKeys:nil, NSWorkspaceDesktopImageFillColorKey, [NSNumber numberWithBool:NO], NSWorkspaceDesktopImageAllowClippingKey, [NSNumber numberWithInteger:NSImageScaleProportionallyUpOrDown], NSWorkspaceDesktopImageScalingKey, nil];
-            [[NSWorkspace sharedWorkspace] setDesktopImageURL:fileURL forScreen:[[NSScreen screens] lastObject]  options:options error:&error];
+            BOOL result = [urlData writeToFile:filePath atomically:YES];
+            if (result == YES)
+            {
+                //change wallpaper
+                NSURL *fileURL = [[NSURL alloc] initFileURLWithPath:filePath];
+                NSError *error;
+                NSDictionary *options = [NSDictionary dictionaryWithObjectsAndKeys:nil, NSWorkspaceDesktopImageFillColorKey, [NSNumber numberWithBool:NO], NSWorkspaceDesktopImageAllowClippingKey, [NSNumber numberWithInteger:NSImageScaleProportionallyUpOrDown], NSWorkspaceDesktopImageScalingKey, nil];
+                [[NSWorkspace sharedWorkspace] setDesktopImageURL:fileURL forScreen:[[NSScreen screens] lastObject]  options:options error:&error];
+                NHFileLog(logFileName,@"Downloaded and updated wallpaper (%@): %@",wallpaperSource,filePath);
+            } else
+            {
+                NHErrFileLog(errorLogFileName,@"Error writing image file to hard disk, directory does not exist or lacking write permission.");
+                return 1;
+            }
         }
     }
     return 0;

@@ -14,6 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 void NHLog(NSString* format, ...);
 void NHFileLog(NSString* filePath,NSString* format, ...);
+void NHErrFileLog(NSString* filePath,NSString* format, ...);
 
 @end
 
