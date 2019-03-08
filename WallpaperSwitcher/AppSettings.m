@@ -64,8 +64,9 @@
     CFPropertyListRef value;
     CFStringRef cfKey = (__bridge CFStringRef)key;
     value = CFPreferencesCopyValue( cfKey, CFSTR("com.wswitcher"), kCFPreferencesCurrentUser, kCFPreferencesAnyHost);
+    value = NULL;
     if (value == NULL) {
-        return( [_appDefaults valueForKey:key] );
+        return( [[_appDefaults valueForKey:key] boolValue] );
     }
     NSNumber *numberValue = (__bridge NSNumber *)value;
     return([numberValue boolValue]);

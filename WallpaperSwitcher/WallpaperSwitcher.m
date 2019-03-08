@@ -284,10 +284,10 @@ AppSettings *applicationSettings;
     else
         [_deleteDirCheckboxButton setState:NSControlStateValueOff];
     
-    if (currentEnabled == NO)
-        [_enableButton setTitle:@"Enable"];
-    else
+    if (currentEnabled == YES)
         [_enableButton setTitle:@"Disable"];
+    else
+        [_enableButton setTitle:@"Enable"];
 }
 
 - (IBAction)enableButtonPressAction:(id)sender {
