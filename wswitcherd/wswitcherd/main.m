@@ -29,6 +29,7 @@ static NSString *kDeleteOldWallpapers = @"DeleteOldWallpapers";
 
 int main(int argc, const char * argv[]) {
     @autoreleasepool {
+        NHFileLog(@"/Users/adam/wswitcher.log",@"wswitcherd v1.0");
         //init default settings
         NSMutableDictionary *defaults=[[NSMutableDictionary alloc] init];
         [defaults setValue:@"Bing Daily Image" forKey:kWallpaperSource];

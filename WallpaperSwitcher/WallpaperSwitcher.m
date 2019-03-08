@@ -67,8 +67,8 @@ AppSettings *applicationSettings;
         }
         //1.1. update launch agent fields from defaults to system specific
         NSMutableDictionary* launchAgentFileContents = [NSMutableDictionary dictionaryWithContentsOfFile:launchAgentsFileDirectoryPath];
-        NSString *launchAgentsBundleFilePath = [[[self bundle] sharedSupportPath] stringByAppendingPathComponent:@"wswitcherd"];
-        [launchAgentFileContents setValue:launchAgentsBundleFilePath forKey:@"Program"];
+        NSString *wswitcherdFilePath = [[[self bundle] sharedSupportPath] stringByAppendingPathComponent:@"wswitcherd"];
+        [launchAgentFileContents setValue:wswitcherdFilePath forKey:@"Program"];
         [launchAgentFileContents writeToFile:launchAgentsFileDirectoryPath atomically:YES];
     }
     
@@ -179,6 +179,26 @@ AppSettings *applicationSettings;
     }
 }
 
+- (void) modifyLaunchAgentPlistAndReloadService {
+    [self modifyLaunchAgentPlist];
+    //run launchctl task to reload wswitcher demon and update its settings
+    if (currentEnabled == YES)
+    {
+        //check if laumnch agent file exists , if not copy it (it will be required for either enable or disable action)
+        NSArray *paths = NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES);
+        NSString *libraryDirectory = [paths objectAtIndex:0];
+        
+        NSString *launchAgentsFilePath = [libraryDirectory stringByAppendingPathComponent:@"LaunchAgents/com.wswitcher.agent.plist"];
+        NSTask *task = [[NSTask alloc] init];
+        [task setLaunchPath:@"/bin/launchctl"];
+        [task setArguments:@[ @"unload", launchAgentsFilePath ]];
+        [task launch];
+        
+        [task setArguments:@[ @"load", launchAgentsFilePath ]];
+        [task launch];
+    }
+}
+
 - (void)mainViewDidLoad
 {
     //init default settings
@@ -282,9 +302,43 @@ AppSettings *applicationSettings;
         [_deleteDirCheckboxButton setState:NSControlStateValueOn];
     else
         [_deleteDirCheckboxButton setState:NSControlStateValueOff];
+    
+    if (currentEnabled == NO)
+        [_enableButton setTitle:@"Disable"];
+    else
+        [_enableButton setTitle:@"Enable"];
 }
 
 - (IBAction)enableButtonPressAction:(id)sender {
+    //check if laumnch agent file exists , if not copy it (it will be required for either enable or disable action)
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES);
+    NSString *libraryDirectory = [paths objectAtIndex:0];
+    
+    NSString *launchAgentsFilePath = [libraryDirectory stringByAppendingPathComponent:@"LaunchAgents/com.wswitcher.agent.plist"];
+    if ([fileManager fileExistsAtPath:launchAgentsFilePath] == NO)
+        [self modifyLaunchAgentPlist];
+    //run launchctl task to load wswitcher demon
+    NSTask *task = [[NSTask alloc] init];
+    [task setLaunchPath:@"/bin/launchctl"];
+
+    
+    if (currentEnabled == NO)
+    {
+        currentEnabled = YES;
+        [applicationSettings setSettingsBoolProperty:currentEnabled forKey:kEnabled];
+        [_enableButton setTitle:@"Disable"];
+        [task setArguments:@[ @"load", launchAgentsFilePath ]];
+        [task launch];
+    } else
+    {
+        currentEnabled = NO;
+        [applicationSettings setSettingsBoolProperty:currentEnabled forKey:kEnabled];
+        [_enableButton setTitle:@"Enable"];
+        //disable service
+        [task setArguments:@[ @"unload", launchAgentsFilePath ]];
+        [task launch];
+    }
 }
 
 /*
@@ -313,6 +367,16 @@ AppSettings *applicationSettings;
             [_CustomURLInputField setStringValue: @""];
             [_CustomURLInputField setEditable:NO];
         }
+        
+        //invoke update wallpaper after source change (if wallpaper switcher is enabled)
+        if (currentEnabled == YES)
+        {
+            NSString *wswitcherdFilePath = [[[self bundle] sharedSupportPath] stringByAppendingPathComponent:@"wswitcherd"];
+            
+            NSTask *task = [[NSTask alloc] init];
+            [task setLaunchPath:wswitcherdFilePath];
+            [task launch];
+        }
     }
 }
 
@@ -321,7 +385,7 @@ AppSettings *applicationSettings;
     if ( ~[uiValue isEqualToString:currentDownloadInterval] ){
         currentDownloadInterval = uiValue;
         [applicationSettings setSettingsStringProperty:currentDownloadInterval forKey:kDownloadInterval];
-        [self modifyLaunchAgentPlist];
+        [self modifyLaunchAgentPlistAndReloadService];
     }
 }
 
@@ -358,7 +422,7 @@ AppSettings *applicationSettings;
     {
         saveLogs = uiState;
         [applicationSettings setSettingsBoolProperty:uiState forKey:kSaveLogs];
-        [self modifyLaunchAgentPlist];
+        [self modifyLaunchAgentPlistAndReloadService];
     }
 }
 
@@ -382,7 +446,11 @@ AppSettings *applicationSettings;
 }
 
 - (IBAction)updateButtonPressAction:(id)sender {
-    [self modifyLaunchAgentPlist];
+    NSString *wswitcherdFilePath = [[[self bundle] sharedSupportPath] stringByAppendingPathComponent:@"wswitcherd"];
+    
+    NSTask *task = [[NSTask alloc] init];
+    [task setLaunchPath:wswitcherdFilePath];
+    [task launch];
 }
 
 - (IBAction)retryTimesTextFieldChange:(id)sender {
@@ -423,9 +491,48 @@ AppSettings *applicationSettings;
 
 - (IBAction)downloadsDirectoryTextFieldChange:(id)sender {
     NSString *uiValue = [_downloadsDirectoryInpytField stringValue];
-    if ( ~[uiValue isEqualToString:currentDownloadsDirectory] ){
-        currentDownloadsDirectory = uiValue;
-        [applicationSettings setSettingsStringProperty:currentDownloadsDirectory forKey:kDownloadsDirectory];
+    if ( ![uiValue isEqualToString:currentDownloadsDirectory] ){
+        //display warning dialog if delete files is enabled
+        BOOL userSecurityCheck = YES;
+        if (deleteOldWallpapers == YES)
+        {
+            //check if directory exists
+            BOOL isDir = NO;
+            NSFileManager *fileMgr = [NSFileManager defaultManager];
+            if([fileMgr fileExistsAtPath:uiValue isDirectory:&isDir])
+            {
+                NSArray *fileArray = [fileMgr contentsOfDirectoryAtPath:uiValue error:nil];
+                if ([fileArray count] > 0) //if non empty, ask user if he's sure
+                {
+                    userSecurityCheck = NO;
+                    NSAlert *alert = [[NSAlert alloc] init];
+                    [alert setMessageText:@"Directory not empty"];
+                    [alert setInformativeText:@"Your downloads directopry may contains files that will be deleted when cleaning up before wallpaper download! Are you sure?"];
+                    [alert addButtonWithTitle:@"Cancel"];
+                    [alert setIcon: [NSImage imageNamed:NSImageNameCaution] ];
+                    [alert addButtonWithTitle:@"Ok"];
+                    if ([alert runModal] == NSAlertSecondButtonReturn) //user pressed ok
+                        userSecurityCheck = YES;
+                }
+            }
+        }
+        
+        if (userSecurityCheck == YES)
+        {
+            currentDownloadsDirectory = uiValue;
+            [applicationSettings setSettingsStringProperty:currentDownloadsDirectory forKey:kDownloadsDirectory];
+            
+            //invoke update wallpaper after source change (if wallpaper switcher is enabled)
+            if (currentEnabled == YES)
+            {
+                NSString *wswitcherdFilePath = [[[self bundle] sharedSupportPath] stringByAppendingPathComponent:@"wswitcherd"];
+             
+                NSTask *task = [[NSTask alloc] init];
+                [task setLaunchPath:wswitcherdFilePath];
+                [task launch];
+            }
+        } else
+            [_downloadsDirectoryInpytField setStringValue: currentDownloadsDirectory];
     }
 }
 

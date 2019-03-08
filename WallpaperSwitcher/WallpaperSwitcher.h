@@ -24,6 +24,7 @@
 @property (weak) IBOutlet NSTextField *downloadsDirectoryInpytField;
 @property (weak) IBOutlet NSButton *deleteDirCheckboxButton;
 @property (weak) IBOutlet NSButton *writeLogsCheckboxButton;
+@property (weak) IBOutlet NSButton *enableButton;
 
 
 

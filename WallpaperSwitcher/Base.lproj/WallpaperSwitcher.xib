@@ -13,6 +13,7 @@
                 <outlet property="downloadIWallpaperIntervalButton" destination="G7d-O1-BJ9" id="Q5u-YA-kyV"/>
                 <outlet property="downloadSourceButton" destination="B9z-zF-GHU" id="cnD-r5-4HR"/>
                 <outlet property="downloadsDirectoryInpytField" destination="7fg-SR-nGb" id="S5D-3r-Lsw"/>
+                <outlet property="enableButton" destination="2QA-1y-gtA" id="SWZ-0Z-yLM"/>
                 <outlet property="retryCheckboxButton" destination="mNV-j1-fBM" id="VeJ-M4-Imt"/>
                 <outlet property="retrySecondsInputField" destination="lq4-H7-0jS" id="ria-EG-LbG"/>
                 <outlet property="retryTimesInputBox" destination="Mqo-Bb-Lmy" id="bIA-OJ-wjB"/>
@@ -294,9 +295,9 @@
                         </connections>
                     </button>
                     <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Irk-Hx-DGM">
-                        <rect key="frame" x="18" y="60" width="365" height="18"/>
+                        <rect key="frame" x="18" y="60" width="301" height="18"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                        <buttonCell key="cell" type="check" title="Before switch delete all past image files in downloads dir" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="gSq-Tm-JEy">
+                        <buttonCell key="cell" type="check" title="Delete past image files in downloads directory" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="gSq-Tm-JEy">
                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                             <font key="font" metaFont="system"/>
                         </buttonCell>
