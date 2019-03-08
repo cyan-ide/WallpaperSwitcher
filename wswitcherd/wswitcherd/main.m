@@ -257,6 +257,19 @@ int main(int argc, const char * argv[]) {
             NSString  *filePath = [downloadsDirectory stringByAppendingString:@"/"];
             filePath = [filePath stringByAppendingString:imageFilename];
             //NHLog(@"filepath: %@",filePath);
+            //check if downloads directory exists , if not create it
+            if ([[NSFileManager defaultManager] fileExistsAtPath:downloadsDirectory] == NO)
+            {
+                NSError *error;
+                NSMutableDictionary *permissions = [[NSMutableDictionary alloc] init];
+                [permissions setObject:[NSNumber numberWithInt:484] forKey:NSFilePosixPermissions]; /*484 is Decimal for the 744 octal*/
+                [permissions setObject:NSUserName() forKey:NSFileOwnerAccountName];
+                [[NSFileManager defaultManager] createDirectoryAtPath:downloadsDirectory withIntermediateDirectories:YES attributes:permissions error:&error];
+                if (error) {
+                    NHErrFileLog(errorLogFileName,@"Error when attempting to create (non-existant) downloads directory: %@", downloadsDirectory);
+                    return 1;
+                }
+            }
             BOOL result = [urlData writeToFile:filePath atomically:YES];
             if (result == YES)
             {

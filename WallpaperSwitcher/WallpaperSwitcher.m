@@ -44,6 +44,9 @@ BOOL deleteOldWallpapers;
 
 AppSettings *applicationSettings;
 
+NSString *logFileName = @"";
+NSString *errorLogFileName = @"";
+
 
 - (void) modifyLaunchAgentPlist {
     //1. check if launch agent file is present, if not copy
@@ -53,17 +56,29 @@ AppSettings *applicationSettings;
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES);
     NSString *libraryDirectory = [paths objectAtIndex:0];
     
+    //permissions used for writing / creating files
+    NSMutableDictionary *permissions = [[NSMutableDictionary alloc] init];
+    [permissions setObject:[NSNumber numberWithInt:484] forKey:NSFilePosixPermissions]; /*484 is Decimal for the 744 octal*/
+    [permissions setObject:NSUserName() forKey:NSFileOwnerAccountName];
+    //paths to src / dest files and directories
     NSString *launchAgentsFileDirectoryPath = [libraryDirectory stringByAppendingPathComponent:@"LaunchAgents/com.wswitcher.agent.plist"];
+    NSString *launchAgentsDirectoryPath = [libraryDirectory stringByAppendingPathComponent:@"LaunchAgents"];
     NSString *launchAgentsBundleFilePath = [[self bundle] pathForResource:@"com.wswitcher.agent" ofType:@"plist"];
-    NHFileLog(@"/Users/adam/wswitcher.log",@"modify Plist!");
-    NHFileLog(@"/Users/adam/wswitcher.log",@"dest path: %@",launchAgentsFileDirectoryPath);
-    NHFileLog(@"/Users/adam/wswitcher.log",@"src path: %@",launchAgentsBundleFilePath);
     if ([fileManager fileExistsAtPath:launchAgentsFileDirectoryPath] == NO)
     {
-        [fileManager copyItemAtPath:launchAgentsBundleFilePath toPath:launchAgentsFileDirectoryPath error:&error];
+        //check if directory exists before coping
+        if ([fileManager fileExistsAtPath:launchAgentsDirectoryPath] == NO)
+            [fileManager createDirectoryAtPath:launchAgentsDirectoryPath withIntermediateDirectories:YES attributes:permissions error:&error];
+        /*
         if (error) {
-            NSLog(@"Error on copying launch agent config file: %@\nfrom path: %@\ntoPath: %@", error, launchAgentsBundleFilePath, launchAgentsFileDirectoryPath);
-        }
+            NHErrFileLog(errorLogFileName,@"Error on copying launch agent config file: %@\nfrom path: %@\ntoPath: %@", error, launchAgentsBundleFilePath, launchAgentsFileDirectoryPath);
+        } */
+        //copy file from bundle to launch agents directory
+        [fileManager copyItemAtPath:launchAgentsBundleFilePath toPath:launchAgentsFileDirectoryPath error:&error];
+        /*
+        if (error) {
+            NHErrFileLog(errorLogFileName,@"Error on copying launch agent config file: %@\nfrom path: %@\ntoPath: %@", error, launchAgentsBundleFilePath, launchAgentsFileDirectoryPath);
+        } */
         //1.1. update launch agent fields from defaults to system specific
         NSMutableDictionary* launchAgentFileContents = [NSMutableDictionary dictionaryWithContentsOfFile:launchAgentsFileDirectoryPath];
         NSString *wswitcherdFilePath = [[[self bundle] sharedSupportPath] stringByAppendingPathComponent:@"wswitcherd"];
@@ -73,7 +88,6 @@ AppSettings *applicationSettings;
     
     //wswitcherd path, log directories
     //2. modify startup interval bast on the app settings
-    NHFileLog(@"/Users/adam/wswitcher.log",@"currentDownloadInterval: %@",currentDownloadInterval);
     NSMutableDictionary* launchAgentFileContents = [NSMutableDictionary dictionaryWithContentsOfFile:launchAgentsFileDirectoryPath];
     if ([currentDownloadInterval isEqualToString:@"every 6 hours"]) {
         NSMutableArray *calendarInterval=[[NSMutableArray alloc] init];
@@ -162,9 +176,6 @@ AppSettings *applicationSettings;
     [launchAgentFileContents writeToFile:launchAgentsFileDirectoryPath atomically:YES];
     
     //3. update file permissions / ownershop for Launch Agent plist (744 / user ownership)
-    NSMutableDictionary *permissions = [[NSMutableDictionary alloc] init];
-    [permissions setObject:[NSNumber numberWithInt:484] forKey:NSFilePosixPermissions]; /*484 is Decimal for the 744 octal*/
-    [permissions setObject:NSUserName() forKey:NSFileOwnerAccountName];
     //NSFileGroupOwnerAccountName
     NSError *error1;
     [fileManager setAttributes:permissions ofItemAtPath:launchAgentsFileDirectoryPath error:&error1];
@@ -193,6 +204,8 @@ AppSettings *applicationSettings;
         [task setArguments:@[ @"unload", launchAgentsFilePath ]];
         [task launch];
         
+        task = [[NSTask alloc] init];
+        [task setLaunchPath:@"/bin/launchctl"];
         [task setArguments:@[ @"load", launchAgentsFilePath ]];
         [task launch];
     }
@@ -288,6 +301,15 @@ AppSettings *applicationSettings;
         [_enableButton setTitle:@"Disable"];
     else
         [_enableButton setTitle:@"Enable"];
+    
+    //set log file paths
+    if ( saveLogs == YES)
+    {
+        NSArray *paths = NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES);
+        NSString *libraryDirectory = [paths objectAtIndex:0];
+        errorLogFileName = [libraryDirectory stringByAppendingPathComponent:@"Logs/wswitcher/wswitcher.stderr.log"];
+        logFileName = [libraryDirectory stringByAppendingPathComponent:@"Logs/wswitcher/wswitcher.stdout.log"];
+    }
 }
 
 - (IBAction)enableButtonPressAction:(id)sender {
@@ -302,13 +324,17 @@ AppSettings *applicationSettings;
     //run launchctl task to load wswitcher demon
     NSTask *task = [[NSTask alloc] init];
     [task setLaunchPath:@"/bin/launchctl"];
-
-    
     if (currentEnabled == NO)
     {
         currentEnabled = YES;
         [applicationSettings setSettingsBoolProperty:currentEnabled forKey:kEnabled];
         [_enableButton setTitle:@"Disable"];
+        //unload just in case it was loaded before
+        [task setArguments:@[ @"unload", launchAgentsFilePath ]];
+        [task launch];
+        //load again
+        task = [[NSTask alloc] init];
+        [task setLaunchPath:@"/bin/launchctl"];
         [task setArguments:@[ @"load", launchAgentsFilePath ]];
         [task launch];
     } else
