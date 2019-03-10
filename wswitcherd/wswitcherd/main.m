@@ -66,7 +66,7 @@ int main(int argc, const char * argv[]) {
         
         //read in properties
         NSString *wallpaperSource = [applicationSettings getSettingsStringPropertyForKey: kWallpaperSource];
-        NSString *downloadInterval = [applicationSettings getSettingsStringPropertyForKey: kDownloadInterval];
+        //NSString *downloadInterval = [applicationSettings getSettingsStringPropertyForKey: kDownloadInterval];
         NSString *wallpaperSourceCustomURL = [applicationSettings getSettingsStringPropertyForKey: kWallpaperSourceCustomURL];
         NSString *wallpaperSourceCustomSubreddit = [applicationSettings getSettingsStringPropertyForKey: kWallpaperSourceCustomSubreddit];
         
@@ -77,32 +77,27 @@ int main(int argc, const char * argv[]) {
         NSNumber *retryCount = [applicationSettings getSettingsNumberPropertyForKey: kRetryCount];
         
         BOOL deleteOldWallpapers = [applicationSettings getSettingsBoolPropertyForKey: kDeleteOldWallpapers];
-        /*
-        NHLog(@"wallpaperSource: %@",wallpaperSource);
-        NHLog(@"downloadInterval: %@",downloadInterval);
-        NHLog(@"wallpaperSourceCustomURL: %@",wallpaperSourceCustomURL);
-        NHLog(@"wallpaperSourceCustomSubreddit: %@",wallpaperSourceCustomSubreddit);
-        NHLog(@"downloadsDirectory: %@",downloadsDirectory);
-        
-        NHLog(@"retryWhenNetworkDown: %d",retryWhenNetworkDown);
-        NHLog(@"retryInterval: %d",[retryInterval integerValue]);
-        NHLog(@"retryCount: %d",[retryCount integerValue]);
-        */
+
         NSString *imageURL;
         NSString *imageFilename;
         
-        //wallpaperSource = @"Reddit";
-        //wallpaperSourceCustomSubreddit = @"/r/wallpapers";
-        //wallpaperSourceCustomURL = @"https://i.redd.it/kydhs421glk21.jpg";
         if ([wallpaperSource isEqualToString:@"National Geographic"])
          {
              //national geographic
              //download html
-             NSError *error;
+             NSError *error = NULL;
              NSString *url_string = [NSString stringWithFormat: @"http://www.nationalgeographic.com/photography/photo-of-the-day/"];
-             //NSData *data = [NSData dataWithContentsOfURL: [NSURL URLWithString:url_string]];
              NSData *data = [NSData dataWithContentsOfURL:[NSURL URLWithString:url_string] options:0 error:&error];
-             //redownload here ? if null ?
+             //redownload if null and settings allow
+             int retryCounter = 0;
+             while (data == NULL && (retryWhenNetworkDown == TRUE) && retryCounter < [retryCount intValue])
+             {
+                 error = NULL;
+                 data = [NSData dataWithContentsOfURL:[NSURL URLWithString:url_string] options:0 error:&error];
+                 retryCounter++;
+                 [NSThread sleepForTimeInterval: [retryInterval intValue]];
+             }
+             //if exhausted download attempts and still cannot get display error
              if (data == NULL || error != NULL)
              {
                  NHErrFileLog(errorLogFileName,@"Error: could not download National Geo webpage to fetch image URL");
@@ -111,7 +106,7 @@ int main(int argc, const char * argv[]) {
              
              NSString *pageContent = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
              
-            
+             error = NULL;
              NSString *pattern = @"<meta property=\"og:image\" content=\"(.*)\"/>"; //get string after the last back-slash
              NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:pattern options:0 error:NULL];
              
@@ -124,24 +119,32 @@ int main(int argc, const char * argv[]) {
         {
             //reddit
             //download JSON /redownload if needed/
-            NSError *error;
+            NSError *error = NULL;
             NSString *subRedditURL = [@"http://www.reddit.com" stringByAppendingString:wallpaperSourceCustomSubreddit];
             subRedditURL = [subRedditURL stringByAppendingString: @"/top.json?limit=10"];
-            //NSData *data = [NSData dataWithContentsOfURL: [NSURL URLWithString:url_string]];
             NSData *data = [NSData dataWithContentsOfURL:[NSURL URLWithString:subRedditURL] options:0 error:&error];
-            //redownload here ? if null ?
+            //redownload if null and settings allow
+            int retryCounter = 0;
+            while (data == NULL && (retryWhenNetworkDown == TRUE) && retryCounter < [retryCount intValue])
+            {
+                error = NULL;
+                data = [NSData dataWithContentsOfURL:[NSURL URLWithString:subRedditURL] options:0 error:&error];
+                retryCounter++;
+                [NSThread sleepForTimeInterval: [retryInterval intValue]];
+            }
+            //if exhausted download attempts and still cannot get display error
             if (data == NULL || error != NULL)
             {
                 NHErrFileLog(errorLogFileName,@"Error: could not download Reddit JSON with posts list.");
                 return 1;
             }
+            error = NULL;
             NSMutableArray *json = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&error];
             if (json == NULL || error != NULL)
             {
                 NHErrFileLog(errorLogFileName,@"Error parsing Reddit JSON: empty or melformed data.");
                 return 1;
             }
-            //NSLog(@"json: %@", json);
             //Parse JSON to extract image URL
             NSDictionary *redditData = [json valueForKey:@"data"];
             NSArray *postsData = [redditData valueForKey:@"children"];
@@ -164,6 +167,7 @@ int main(int argc, const char * argv[]) {
                 imageURL = orderedKeys[0];
                 //parse url to extract image filename
                 NSString *pattern = @"([^\\/]+)$"; //get string after the last back-slash
+                error = NULL;
                 NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:pattern options:0 error:NULL];
             
                 NSTextCheckingResult *match = [regex firstMatchInString:imageURL options:0 range:NSMakeRange(0, [imageURL length])];
@@ -186,23 +190,31 @@ int main(int argc, const char * argv[]) {
         {
             //default: bing
             //download JSON /redownload if needed/
-            NSError *error;
+            NSError *error = NULL;
             NSString *url_string = [NSString stringWithFormat: @"https://www.bing.com/HPImageArchive.aspx?format=js&idx=0&n=1&mkt=en-US"];
-            //NSData *data = [NSData dataWithContentsOfURL: [NSURL URLWithString:url_string]];
             NSData *data = [NSData dataWithContentsOfURL:[NSURL URLWithString:url_string] options:0 error:&error];
-            //redownload here ? if null ?
+            //redownload if null and settings allow
+            int retryCounter = 0;
+            while (data == NULL && (retryWhenNetworkDown == TRUE) && retryCounter < [retryCount intValue])
+            {
+                error = NULL;
+                data = [NSData dataWithContentsOfURL:[NSURL URLWithString:url_string] options:0 error:&error];
+                retryCounter++;
+                [NSThread sleepForTimeInterval: [retryInterval intValue]];
+            }
+            //if couldnt download display error
             if (data == NULL || error != NULL)
             {
                 NHErrFileLog(errorLogFileName,@"Error: could not download Bing JSON with Daily Image URL.");
                 return 1;
             }
+            error = NULL;
             NSMutableArray *json = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&error];
             if (json == NULL || error != NULL)
             {
                 NHErrFileLog(errorLogFileName,@"Error parsing Bing JSON: empty or melformed data.");
                 return 1;
             }
-            //NSLog(@"json: %@", json);
             //Parse JSON to extract image URL
             NSDictionary *images = [json valueForKey:@"images"][0];
             imageURL = [images objectForKey:@"url"];
@@ -211,17 +223,20 @@ int main(int argc, const char * argv[]) {
             
             //parse to extract image filename
             NSString *pattern = @"([^\\/]+)$"; //get string after the last back-slash
+            error = NULL;
             NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:pattern options:0 error:NULL];
             
             NSTextCheckingResult *match = [regex firstMatchInString:imageURL options:0 range:NSMakeRange(0, [imageURL length])];
             if (match != nil)
                 imageFilename = [imageURL substringWithRange:[match rangeAtIndex:1]];
+                //check image filename ending, if doesn't match any of the supported just set predefined
+                if (![imageFilename hasSuffix:@".jpg"] && ![imageFilename hasSuffix:@".png"] && ![imageFilename hasSuffix:@".gif"])
+                    imageFilename = @"bing_daily.png";
             else
                 imageFilename = @"bing_daily.png";
         }
         
         //download image as indicated in source
-        //NHLog(@"imageURL: %@",imageURL);
         NSURL  *url = [NSURL URLWithString:imageURL];
         NSData *urlData = [NSData dataWithContentsOfURL:url];
         int retryCounter = 0;
@@ -231,9 +246,6 @@ int main(int argc, const char * argv[]) {
             retryCounter++;
             [NSThread sleepForTimeInterval: [retryInterval intValue]];
         }
-        //NHLog(@"done with attempts: %d",retryCounter);
-        //   NHLog(@"error downloading image!");
-        //while ()
         if ( urlData )
         {
             //delete past files (exclude subdirectories, delete only images)
@@ -256,7 +268,6 @@ int main(int argc, const char * argv[]) {
             //write current file (as indicated by file title)
             NSString  *filePath = [downloadsDirectory stringByAppendingString:@"/"];
             filePath = [filePath stringByAppendingString:imageFilename];
-            //NHLog(@"filepath: %@",filePath);
             //check if downloads directory exists , if not create it
             if ([[NSFileManager defaultManager] fileExistsAtPath:downloadsDirectory] == NO)
             {

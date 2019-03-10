@@ -52,7 +52,7 @@ NSString *errorLogFileName = @"";
     //1. check if launch agent file is present, if not copy
 
     NSFileManager *fileManager = [NSFileManager defaultManager];
-    NSError *error;
+    NSError *error = NULL;
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES);
     NSString *libraryDirectory = [paths objectAtIndex:0];
     
@@ -74,6 +74,7 @@ NSString *errorLogFileName = @"";
             NHErrFileLog(errorLogFileName,@"Error on copying launch agent config file: %@\nfrom path: %@\ntoPath: %@", error, launchAgentsBundleFilePath, launchAgentsFileDirectoryPath);
         } */
         //copy file from bundle to launch agents directory
+        error = NULL;
         [fileManager copyItemAtPath:launchAgentsBundleFilePath toPath:launchAgentsFileDirectoryPath error:&error];
         /*
         if (error) {
@@ -177,11 +178,12 @@ NSString *errorLogFileName = @"";
     
     //3. update file permissions / ownershop for Launch Agent plist (744 / user ownership)
     //NSFileGroupOwnerAccountName
-    NSError *error1;
+    NSError *error1 = NULL;
     [fileManager setAttributes:permissions ofItemAtPath:launchAgentsFileDirectoryPath error:&error1];
     if (saveLogs == YES) {
         NSString *logDir = [libraryDirectory stringByAppendingPathComponent:@"Logs/wswitcher"];
         BOOL isDir = NO;
+        error1 = NULL;
         if([fileManager fileExistsAtPath:logDir isDirectory:&isDir] && isDir)
             [fileManager setAttributes:permissions ofItemAtPath:logDir error:&error1];
         else
