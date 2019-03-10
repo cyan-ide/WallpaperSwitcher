@@ -2,7 +2,6 @@
 //  NHLogger.m
 //  WallpaperSwitcher
 //
-//  Created by adam on 5/3/19.
 //  Copyright © 2019 Adam Westerski. All rights reserved.
 //
 
@@ -57,10 +56,7 @@ void NHFileLog(NSString* filePath,NSString* format, ...)
         printf("%s\n", [message UTF8String]);
     else
     {
-        //NSError *error;
         NSData *data = [message dataUsingEncoding:NSUTF8StringEncoding];
-        //    [message writeToFile:filePath atomically:YES encoding:NSUTF8StringEncoding error:&error];
-        ////
         NSFileManager *fileManager = [NSFileManager defaultManager];
         if ([fileManager fileExistsAtPath:filePath]) {
             // Add the text at the end of the file.

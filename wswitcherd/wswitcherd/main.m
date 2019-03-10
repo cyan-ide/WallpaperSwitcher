@@ -2,7 +2,6 @@
 //  main.m
 //  wswitcherd
 //
-//  Created by adam on 5/3/19.
 //  Copyright © 2019 Adam Westerski. All rights reserved.
 //
 
@@ -66,7 +65,6 @@ int main(int argc, const char * argv[]) {
         
         //read in properties
         NSString *wallpaperSource = [applicationSettings getSettingsStringPropertyForKey: kWallpaperSource];
-        //NSString *downloadInterval = [applicationSettings getSettingsStringPropertyForKey: kDownloadInterval];
         NSString *wallpaperSourceCustomURL = [applicationSettings getSettingsStringPropertyForKey: kWallpaperSourceCustomURL];
         NSString *wallpaperSourceCustomSubreddit = [applicationSettings getSettingsStringPropertyForKey: kWallpaperSourceCustomSubreddit];
         
@@ -219,7 +217,6 @@ int main(int argc, const char * argv[]) {
             NSDictionary *images = [json valueForKey:@"images"][0];
             imageURL = [images objectForKey:@"url"];
             imageURL = [@"http://www.bing.com" stringByAppendingString:imageURL];
-            //imageURL = [json valueForKey:@"url"];
             
             //parse to extract image filename
             NSString *pattern = @"([^\\/]+)$"; //get string after the last back-slash
@@ -287,7 +284,7 @@ int main(int argc, const char * argv[]) {
                 //change wallpaper
                 NSURL *fileURL = [[NSURL alloc] initFileURLWithPath:filePath];
                 NSError *error;
-                NSDictionary *options = [NSDictionary dictionaryWithObjectsAndKeys:nil, NSWorkspaceDesktopImageFillColorKey, [NSNumber numberWithBool:NO], NSWorkspaceDesktopImageAllowClippingKey, [NSNumber numberWithInteger:NSImageScaleProportionallyUpOrDown], NSWorkspaceDesktopImageScalingKey, nil];
+                NSDictionary *options = [NSDictionary dictionaryWithObjectsAndKeys: [NSNumber numberWithBool:YES], NSWorkspaceDesktopImageAllowClippingKey, [NSNumber numberWithInteger:NSImageScaleProportionallyUpOrDown], NSWorkspaceDesktopImageScalingKey, nil];
                 [[NSWorkspace sharedWorkspace] setDesktopImageURL:fileURL forScreen:[[NSScreen screens] lastObject]  options:options error:&error];
                 NHFileLog(logFileName,@"Downloaded and updated wallpaper (%@): %@",wallpaperSource,filePath);
             } else
