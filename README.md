@@ -12,16 +12,18 @@ Tested on MacOS Mojave (10.14) and MacOS Sierra (10.12).
 Overview
 -----------
 
-Source code consists of two main parts:
+App consists of two main parts:
 - preference pane that integrates into MacOS System Preferences and allows to configure all sorts of options (wallpaper source, how often switch etc.)
 - command-line tool that downloads the image (saves it into hard disk, and asks OS to switch it)
 
-The command-line app is included into the Pref pane during compilation and when installed resides in that bundle. 
-During runtime it is periodaically invoked by MacOS native scheduler - launchd (the setup is done via Preference Pane). All app settigs are stored in ~/Preferences/
+The command-line tool is included into the Pref pane bundle and installs together with it. During runtime it is periodaically invoked by MacOS native scheduler - launchd (the setup is done via Preference Pane).
 
-Installation / Usage
+Installation
 -----------
 To install simply open / double click the Preference Pane and add it to your System Preferences. Afterwards go to Wallpaper Switcher preferences and press "Enable".
+
+Usage / Options
+-----------
 
 Available options are:
 - **Download New Wallpaper (interval).** Choose how often the wallpaper should be switched: every 6 hours, every 12 hours, every day, twice a week, weekly
