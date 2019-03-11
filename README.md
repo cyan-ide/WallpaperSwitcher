@@ -7,7 +7,7 @@ Allows to automatically switch wallpaper at selected interval, to an image comin
 - Reddit post
 - custom URL
 
-Tested on MacOS Mojave (10.14) and MacOS Sierra (10.12).
+Tested on MacOS Mojave (10.14) and MacOS Sierra (10.12). **Download the latest binary version** [here](https://github.com/cyan-ide/WallpaperSwitcher/releases/download/1.0/WallpaperSwitcher.prefPane.zip).
 
 Overview
 -----------
