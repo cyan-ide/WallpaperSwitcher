@@ -29,6 +29,24 @@ static NSString *kDeleteOldWallpapers = @"DeleteOldWallpapers";
 NSString *logFileName = @"";
 NSString *errorLogFileName = @"";
 
+NSString* contentTypeForImageData(NSData *data) {
+    uint8_t c;
+    [data getBytes:&c length:1];
+    
+    switch (c) {
+        case 0xFF:
+            return @"jpg";
+        case 0x89:
+            return @"png";
+        case 0x47:
+            return @"gif";
+        case 0x49:
+        case 0x4D:
+            return @"tiff";
+    }
+    return nil;
+}
+
 int main(int argc, const char * argv[]) {
     @autoreleasepool {
         NSArray *arguments = [[NSProcessInfo processInfo] arguments]; //cmd line arguments
@@ -78,6 +96,7 @@ int main(int argc, const char * argv[]) {
 
         NSString *imageURL;
         NSString *imageFilename;
+        BOOL unrecognizedImageType = NO;
         
         if ([wallpaperSource isEqualToString:@"National Geographic"])
          {
@@ -111,7 +130,8 @@ int main(int argc, const char * argv[]) {
              NSTextCheckingResult *match = [regex firstMatchInString:pageContent options:0 range:NSMakeRange(0, [pageContent length])];
              if (match != nil)
                 imageURL = [pageContent substringWithRange:[match rangeAtIndex:1]];
-             imageFilename = @"nat_geo.jpg";
+             imageFilename = @"nat_geo";
+             unrecognizedImageType = YES;
          }
         else if ([wallpaperSource isEqualToString:@"Reddit"])
         {
@@ -171,8 +191,10 @@ int main(int argc, const char * argv[]) {
                 NSTextCheckingResult *match = [regex firstMatchInString:imageURL options:0 range:NSMakeRange(0, [imageURL length])];
                 if (match != nil)
                     imageFilename = [imageURL substringWithRange:[match rangeAtIndex:1]];
-                else
-                    imageFilename = @"subreddit.png";
+                else {
+                    imageFilename = @"subreddit";
+                    unrecognizedImageType = YES;
+                }
             }
             else {
                 NHErrFileLog(errorLogFileName,@"Error looking for image data in Subreddit. Couldn't find any URLs linking to images.");
@@ -182,7 +204,8 @@ int main(int argc, const char * argv[]) {
         {
             //others
             imageURL = wallpaperSourceCustomURL;
-            imageFilename = @"custom_image.jpg";
+            imageFilename = @"custom_image";
+            unrecognizedImageType = YES;
             
         } else
         {
@@ -217,7 +240,6 @@ int main(int argc, const char * argv[]) {
             NSDictionary *images = [json valueForKey:@"images"][0];
             imageURL = [images objectForKey:@"url"];
             imageURL = [@"http://www.bing.com" stringByAppendingString:imageURL];
-            
             //parse to extract image filename
             NSString *pattern = @"([^\\/]+)$"; //get string after the last back-slash
             error = NULL;
@@ -228,9 +250,15 @@ int main(int argc, const char * argv[]) {
                 imageFilename = [imageURL substringWithRange:[match rangeAtIndex:1]];
                 //check image filename ending, if doesn't match any of the supported just set predefined
                 if (![imageFilename hasSuffix:@".jpg"] && ![imageFilename hasSuffix:@".png"] && ![imageFilename hasSuffix:@".gif"])
-                    imageFilename = @"bing_daily.png";
+                {
+                    imageFilename = @"bing_daily";
+                    unrecognizedImageType = YES;
+                }
             else
-                imageFilename = @"bing_daily.png";
+            {
+                imageFilename = @"bing_daily";
+                unrecognizedImageType = YES;
+            }
         }
         
         //download image as indicated in source
@@ -278,6 +306,13 @@ int main(int argc, const char * argv[]) {
                     return 1;
                 }
             }
+            //recognize file type if couldn't figure it out from the URL
+            if (unrecognizedImageType == YES) {
+                NSString *imageType = contentTypeForImageData(urlData);
+                filePath = [filePath stringByAppendingString:@"."];
+                filePath = [filePath stringByAppendingString:imageType];
+            }
+            
             BOOL result = [urlData writeToFile:filePath atomically:YES];
             if (result == YES)
             {
