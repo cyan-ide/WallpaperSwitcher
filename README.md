@@ -30,8 +30,8 @@ Available options are:
 - **Wallpaper source.** Select where the wallpaper should be downloaded from: Bing, National Geographic, selected Reddit board, custom URL
 - **Custom URL / Custom Subreddit.** Input custom URL if source is "Other ..." or subreddit name in format /r/<name> 
 - **Retry download if network down.** If internet connection is unavailable or source website is down, Wallpaper Switcher can re-attempt downloading the image several times.
--- **retry x times.** Set how many times re-download should be attempted.
--- **every x seconds.** Set how long should Wallpaper Switcher wait before attempting to download image if connection was down.
+  - **retry x times.** Set how many times re-download should be attempted.
+  - **every x seconds.** Set how long should Wallpaper Switcher wait before attempting to download image if connection was down.
 - **Downloads directory.** Set a custom directory to which all wallpapers should be downloaded.
 - **Delete past image files in downloads directory.** If selected, prior to downloading new image, all previous images in the downloads directory will be deleted 
 (should be used with care as Wallpaper Switcher will delete all image files in the specified directory).
