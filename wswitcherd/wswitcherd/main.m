@@ -131,6 +131,9 @@ int main(int argc, const char * argv[]) {
              if (match != nil)
                 imageURL = [pageContent substringWithRange:[match rangeAtIndex:1]];
              imageFilename = @"nat_geo";
+             NSDateFormatter *dateFormatter=[[NSDateFormatter alloc] init];
+             [dateFormatter setDateFormat:@"yyyyMMdd_HHmmss"];
+             imageFilename = [imageFilename stringByAppendingString:[dateFormatter stringFromDate:[NSDate date]]];
              unrecognizedImageType = YES;
          }
         else if ([wallpaperSource isEqualToString:@"Reddit"])
@@ -193,6 +196,9 @@ int main(int argc, const char * argv[]) {
                     imageFilename = [imageURL substringWithRange:[match rangeAtIndex:1]];
                 else {
                     imageFilename = @"subreddit";
+                    NSDateFormatter *dateFormatter=[[NSDateFormatter alloc] init];
+                    [dateFormatter setDateFormat:@"yyyyMMdd_HHmmss"];
+                    imageFilename = [imageFilename stringByAppendingString:[dateFormatter stringFromDate:[NSDate date]]];
                     unrecognizedImageType = YES;
                 }
             }
@@ -205,6 +211,9 @@ int main(int argc, const char * argv[]) {
             //others
             imageURL = wallpaperSourceCustomURL;
             imageFilename = @"custom_image";
+            NSDateFormatter *dateFormatter=[[NSDateFormatter alloc] init];
+            [dateFormatter setDateFormat:@"yyyyMMdd_HHmmss"];
+            imageFilename = [imageFilename stringByAppendingString:[dateFormatter stringFromDate:[NSDate date]]];
             unrecognizedImageType = YES;
             
         } else
@@ -252,11 +261,17 @@ int main(int argc, const char * argv[]) {
                 if (![imageFilename hasSuffix:@".jpg"] && ![imageFilename hasSuffix:@".png"] && ![imageFilename hasSuffix:@".gif"])
                 {
                     imageFilename = @"bing_daily";
+                    NSDateFormatter *dateFormatter=[[NSDateFormatter alloc] init];
+                    [dateFormatter setDateFormat:@"yyyyMMdd_HHmmss"];
+                    imageFilename = [imageFilename stringByAppendingString:[dateFormatter stringFromDate:[NSDate date]]];
                     unrecognizedImageType = YES;
                 }
             else
             {
                 imageFilename = @"bing_daily";
+                NSDateFormatter *dateFormatter=[[NSDateFormatter alloc] init];
+                [dateFormatter setDateFormat:@"yyyyMMdd_HHmmss"];
+                imageFilename = [imageFilename stringByAppendingString:[dateFormatter stringFromDate:[NSDate date]]];
                 unrecognizedImageType = YES;
             }
         }
@@ -312,16 +327,21 @@ int main(int argc, const char * argv[]) {
                 filePath = [filePath stringByAppendingString:@"."];
                 filePath = [filePath stringByAppendingString:imageType];
             }
-            
             BOOL result = [urlData writeToFile:filePath atomically:YES];
             if (result == YES)
             {
                 //change wallpaper
                 NSURL *fileURL = [[NSURL alloc] initFileURLWithPath:filePath];
-                NSError *error;
+                NSError *error = NULL;
                 NSDictionary *options = [NSDictionary dictionaryWithObjectsAndKeys: [NSNumber numberWithBool:YES], NSWorkspaceDesktopImageAllowClippingKey, [NSNumber numberWithInteger:NSImageScaleProportionallyUpOrDown], NSWorkspaceDesktopImageScalingKey, nil];
                 [[NSWorkspace sharedWorkspace] setDesktopImageURL:fileURL forScreen:[[NSScreen screens] lastObject]  options:options error:&error];
-                NHFileLog(logFileName,@"Downloaded and updated wallpaper (%@): %@",wallpaperSource,filePath);
+                //[[NSWorkspace sharedWorkspace] setDesktopImageURL:fileURL forScreen:[[NSScreen screens] lastObject]  options:nil error:&error];
+                if (error != NULL)
+                {
+                    NHErrFileLog(errorLogFileName,@"Error setting wallpaper (%@) to %@",wallpaperSource,filePath);
+                    return 1;
+                } else
+                    NHFileLog(logFileName,@"Downloaded and updated wallpaper (%@): %@",wallpaperSource,filePath);
             } else
             {
                 NHErrFileLog(errorLogFileName,@"Error writing image file to hard disk, directory does not exist or lacking write permission.");
